@@ -45,7 +45,7 @@ export default function ManageServicesPage() {
   const [services, setServices] = useState<Service[]>([]);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All Categories");
-  const [statusFilter, setStatusFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState("active");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [actionId, setActionId] = useState<string | null>(null);
@@ -94,7 +94,9 @@ export default function ManageServicesPage() {
     (service) => service.status === "active",
   ).length;
 
-  const inactiveCount = services.length - activeCount;
+  const inactiveCount = services.filter(
+    (service) => service.status === "inactive",
+  ).length;
 
   const handleStatusChange = async (service: Service) => {
     const nextStatus =
@@ -147,14 +149,21 @@ export default function ManageServicesPage() {
       });
 
       setServices((current) =>
-        current.filter((item) => item._id !== service._id),
+        current.map((item) =>
+          item._id === service._id
+            ? { ...item, status: "inactive" }
+            : item,
+        ),
       );
 
       setServiceToDelete(null);
-      toast.success(`${service.serviceName} deleted successfully.`);
+
+      toast.success(
+        `${service.serviceName} removed from active services.`,
+      );
     } catch (err) {
       toast.error(
-        err instanceof Error ? err.message : "Failed to delete service.",
+        err instanceof Error ? err.message : "Failed to remove service.",
       );
     } finally {
       setActionId(null);
@@ -241,9 +250,9 @@ export default function ManageServicesPage() {
             onChange={(event) => setStatusFilter(event.target.value)}
             className="rounded-xl border border-[#e9e1d8] bg-[#fcfaf7] px-3 py-3 text-sm outline-none focus:border-[#b47a57]"
           >
+            <option value="active">Active Services</option>
+            <option value="inactive">Inactive Services</option>
             <option value="all">All Statuses</option>
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
           </select>
 
           <button
@@ -286,13 +295,17 @@ export default function ManageServicesPage() {
           <h2 className="mt-5 text-lg font-bold text-[#292521]">
             {services.length === 0
               ? "No services added yet"
-              : "No matching services"}
+              : statusFilter === "active"
+                ? "No active services"
+                : "No matching services"}
           </h2>
 
           <p className="mx-auto mt-2 max-w-sm text-sm leading-6 text-[#817970]">
             {services.length === 0
               ? "Start building your service collection by adding your first men's grooming service."
-              : "Try changing your search or filters to find a service."}
+              : statusFilter === "active"
+                ? "There are no active services right now. You can activate an existing service from the inactive services filter."
+                : "Try changing your search or filters to find a service."}
           </p>
 
           {services.length === 0 && (
@@ -416,15 +429,17 @@ export default function ManageServicesPage() {
               id="delete-service-title"
               className="mt-5 text-xl font-bold text-[#292521]"
             >
-              Delete this service?
+              Remove this service?
             </h2>
 
             <p className="mt-2 text-sm leading-6 text-[#817970]">
-              Are you sure you want to delete{" "}
+              Remove{" "}
               <strong className="text-[#292521]">
                 {serviceToDelete.serviceName}
-              </strong>
-              ? This action cannot be undone.
+              </strong>{" "}
+              from active services? It will be hidden from customers, but
+              existing appointment history will be preserved. You can
+              reactivate it later.
             </p>
 
             <div className="mt-7 flex justify-end gap-3">
@@ -444,8 +459,8 @@ export default function ManageServicesPage() {
                 className="rounded-xl bg-red-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-50"
               >
                 {actionId === serviceToDelete._id
-                  ? "Deleting..."
-                  : "Delete Service"}
+                  ? "Removing..."
+                  : "Remove Service"}
               </button>
             </div>
           </div>
