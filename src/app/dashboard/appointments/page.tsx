@@ -21,6 +21,17 @@ type AppointmentStatus = "pending" | "confirmed" | "cancelled";
 type PaymentStatus = "unpaid" | "paid";
 type StatusFilter = "all" | AppointmentStatus;
 
+interface Service {
+  _id: string;
+  serviceName: string;
+  category: string;
+  description?: string;
+  price: number;
+  duration: number;
+  image: string;
+  status?: string;
+}
+
 interface Appointment {
   _id: string;
   serviceId: string;
@@ -40,14 +51,6 @@ interface Appointment {
     phone?: string;
   } | null;
   service?: Service | null;
-}
-
-interface Service {
-  _id: string;
-  serviceName: string;
-  category: string;
-  image: string;
-  duration: number;
 }
 
 interface AppointmentItem {
@@ -92,26 +95,10 @@ export default function AppointmentsPage() {
         { authenticated: true },
       );
 
-      const results = await Promise.all(
-        appointments.map(async (appointment) => {
-          // Admin API already provides service information.
-          if (isAdmin) {
-            return {
-              appointment,
-              service: appointment.service ?? null,
-            };
-          }
-
-          // Customer API returns the original appointment structure.
-          try {
-            const service = await apiRequest<Service>(
-              `/api/services/${appointment.serviceId}`,
-            );
-
-            return { appointment, service };
-          } catch {
-            return { appointment, service: null };
-          }
+      const results: AppointmentItem[] = appointments.map(
+        (appointment) => ({
+          appointment,
+          service: appointment.service ?? null,
         }),
       );
 
@@ -125,7 +112,7 @@ export default function AppointmentsPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [isAdmin]);
+  }, []);
 
   useEffect(() => {
     if (session?.user) {
@@ -153,8 +140,7 @@ export default function AppointmentsPage() {
 
       setConfirmAction(null);
       setActionMessage(
-        result.message ||
-          `Appointment ${status} successfully.`,
+        result.message || `Appointment ${status} successfully.`,
       );
 
       await loadAppointments();
