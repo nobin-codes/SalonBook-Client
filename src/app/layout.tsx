@@ -2,6 +2,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Geist } from "next/font/google";
+import { Toaster } from "sonner";
 import "./globals.css";
 import SiteShell from "@/components/layout/site-shell";
 
@@ -27,6 +28,8 @@ export default function RootLayout({
   return (
     <html lang="en" className={geist.variable}>
       <body>
+        <Toaster position="top-right" richColors />
+
         <Suspense fallback={<main className="min-h-screen" />}>
           <SiteShell>{children}</SiteShell>
         </Suspense>
