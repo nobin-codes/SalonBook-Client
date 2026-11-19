@@ -33,7 +33,7 @@ type NavbarUser = {
 export default function Navbar() {
   const router = useRouter();
   const pathname = usePathname();
-  const { data: session, isPending } = useSession();
+  const { data: session } = useSession();
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAccountOpen, setIsAccountOpen] = useState(false);
@@ -78,7 +78,6 @@ export default function Navbar() {
         aria-label="Main navigation"
         className="container flex h-[76px] items-center justify-between"
       >
-        {/* Brand */}
         <Link
           href="/"
           onClick={closeMenu}
@@ -93,7 +92,6 @@ export default function Navbar() {
           </span>
         </Link>
 
-        {/* Desktop navigation */}
         <div className="absolute left-1/2 hidden h-full -translate-x-1/2 items-center gap-1 md:flex">
           {navigation.map((item) => {
             const active = isActive(item.href);
@@ -122,12 +120,7 @@ export default function Navbar() {
 
         {/* Desktop account actions */}
         <div className="hidden items-center gap-5 md:flex">
-          {isPending ? (
-            <LoaderCircle
-              size={19}
-              className="animate-spin text-[#b47a57]"
-            />
-          ) : user ? (
+          {user ? (
             <div className="relative">
               <button
                 type="button"
@@ -209,10 +202,7 @@ export default function Navbar() {
                       className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-[13px] font-medium text-[#b44d43] transition-colors hover:bg-[#fbefec] disabled:opacity-50"
                     >
                       {loggingOut ? (
-                        <LoaderCircle
-                          size={16}
-                          className="animate-spin"
-                        />
+                        <LoaderCircle size={16} className="animate-spin" />
                       ) : (
                         <LogOut size={16} />
                       )}
@@ -286,14 +276,7 @@ export default function Navbar() {
             </div>
 
             <div className="mt-5 border-t border-[#e9e1d8] pt-5">
-              {isPending ? (
-                <div className="flex justify-center py-4">
-                  <LoaderCircle
-                    size={21}
-                    className="animate-spin text-[#b47a57]"
-                  />
-                </div>
-              ) : user ? (
+              {user ? (
                 <div className="space-y-3">
                   <div className="flex items-center gap-3 rounded-2xl border border-[#e9e1d8] bg-[#fffdf9] p-3">
                     {user.image ? (
@@ -347,10 +330,7 @@ export default function Navbar() {
                     className="flex h-11 w-full items-center gap-3 rounded-xl px-3 text-left text-sm font-medium text-[#b44d43] transition-colors hover:bg-[#fbefec] disabled:opacity-50"
                   >
                     {loggingOut ? (
-                      <LoaderCircle
-                        size={17}
-                        className="animate-spin"
-                      />
+                      <LoaderCircle size={17} className="animate-spin" />
                     ) : (
                       <LogOut size={17} />
                     )}
