@@ -64,6 +64,50 @@ const statusStyles: Record<AppointmentStatus, string> = {
   cancelled: "bg-red-50 text-red-700",
 };
 
+// Appointment dates are stored as YYYY-MM-DD.
+// Parse them as UTC to prevent timezone-related date shifts.
+const formatDate = (date: string) => {
+  const [year, month, day] = date.split("-").map(Number);
+
+  if (
+    !year ||
+    !month ||
+    !day ||
+    month < 1 ||
+    month > 12 ||
+    day < 1 ||
+    day > 31
+  ) {
+    return date;
+  }
+
+  const parsedDate = new Date(Date.UTC(year, month - 1, day));
+
+  if (
+    parsedDate.getUTCFullYear() !== year ||
+    parsedDate.getUTCMonth() !== month - 1 ||
+    parsedDate.getUTCDate() !== day
+  ) {
+    return date;
+  }
+
+  return parsedDate.toLocaleDateString("en-US", {
+    timeZone: "UTC",
+    weekday: "short",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+};
+
+const formatCreatedDate = (date: string) =>
+  new Date(date).toLocaleDateString("en-US", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    timeZone: "Asia/Dhaka",
+  });
+
 export default function AppointmentsPage() {
   const { data: session } = useSession();
 
@@ -188,15 +232,6 @@ export default function AppointmentsPage() {
       setPaymentProcessingId(null);
     }
   };
-
-  const formatDate = (date: string) =>
-    new Date(`${date}T00:00:00`).toLocaleDateString("en-US", {
-      weekday: "short",
-      day: "numeric",
-      month: "long",
-      year: "numeric",
-      timeZone: "UTC",
-    });
 
   const totalAppointments = items.length;
 
@@ -489,15 +524,7 @@ export default function AppointmentsPage() {
                     </div>
 
                     <p className="text-xs text-[#817970]">
-                      Booked{" "}
-                      {new Date(appointment.createdAt).toLocaleDateString(
-                        "en-US",
-                        {
-                          day: "numeric",
-                          month: "short",
-                          year: "numeric",
-                        },
-                      )}
+                      Booked {formatCreatedDate(appointment.createdAt)}
                     </p>
                   </div>
                 )}
