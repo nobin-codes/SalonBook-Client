@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useState, type FormEvent } from "react";
 import { Camera, CheckCircle2, Loader2, UserRound } from "lucide-react";
 import { authClient, useSession } from "@/lib/auth-client";
 
@@ -9,22 +9,55 @@ export default function ProfilePage() {
   const session = useSession();
   const user = session.data?.user;
 
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [image, setImage] = useState("");
+  if (session.isPending) {
+    return (
+      <div className="flex min-h-[400px] items-center justify-center">
+        <Loader2 className="h-7 w-7 animate-spin text-[#9A6849]" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="rounded-2xl border border-[#E9DFD5] bg-white p-8 text-center">
+        <h1 className="text-xl font-semibold text-[#30251F]">
+          Please sign in
+        </h1>
+        <p className="mt-2 text-sm text-[#85776D]">
+          Sign in to view and update your profile.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <ProfileForm
+      key={user.id}
+      user={user}
+      refetchSession={session.refetch}
+    />
+  );
+}
+
+interface ProfileFormProps {
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    image?: string | null;
+    role?: string;
+    phone?: string;
+  };
+  refetchSession: () => Promise<unknown>;
+}
+
+function ProfileForm({ user, refetchSession }: ProfileFormProps) {
+  const [name, setName] = useState(user.name ?? "");
+  const [phone, setPhone] = useState(user.phone ?? "");
+  const [image, setImage] = useState(user.image ?? "");
   const [isSaving, setIsSaving] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
-
-  useEffect(() => {
-    if (user) {
-      setName(user.name ?? "");
-      setImage(user.image ?? "");
-      setPhone(
-        (user as typeof user & { phone?: string }).phone ?? "",
-      );
-    }
-  }, [user]);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -61,7 +94,7 @@ export default function ProfilePage() {
         throw new Error(result.error.message || "Failed to update profile.");
       }
 
-      await session.refetch();
+      await refetchSession();
       setSuccess("Your profile has been updated successfully.");
     } catch (err) {
       setError(
@@ -73,27 +106,6 @@ export default function ProfilePage() {
       setIsSaving(false);
     }
   };
-
-  if (session.isPending) {
-    return (
-      <div className="flex min-h-[400px] items-center justify-center">
-        <Loader2 className="h-7 w-7 animate-spin text-[#9A6849]" />
-      </div>
-    );
-  }
-
-  if (!user) {
-    return (
-      <div className="rounded-2xl border border-[#E9DFD5] bg-white p-8 text-center">
-        <h1 className="text-xl font-semibold text-[#30251F]">
-          Please sign in
-        </h1>
-        <p className="mt-2 text-sm text-[#85776D]">
-          Sign in to view and update your profile.
-        </p>
-      </div>
-    );
-  }
 
   const initials = name
     .trim()
@@ -138,7 +150,7 @@ export default function ProfilePage() {
             </h2>
             <p className="mt-1 text-sm text-[#85776D]">{user.email}</p>
             <span className="mt-2 inline-block rounded-full bg-[#F5EEE8] px-3 py-1 text-xs font-medium capitalize text-[#91684D]">
-              {(user as typeof user & { role?: string }).role ?? "Customer"}
+              {user.role ?? "Customer"}
             </span>
           </div>
         </div>
@@ -154,10 +166,7 @@ export default function ProfilePage() {
           </div>
 
           <div className="space-y-2">
-            <label
-              htmlFor="name"
-              className="text-sm font-medium text-[#493B32]"
-            >
+            <label htmlFor="name" className="text-sm font-medium text-[#493B32]">
               Full Name
             </label>
             <input
@@ -172,10 +181,7 @@ export default function ProfilePage() {
           </div>
 
           <div className="space-y-2">
-            <label
-              htmlFor="email"
-              className="text-sm font-medium text-[#493B32]"
-            >
+            <label htmlFor="email" className="text-sm font-medium text-[#493B32]">
               Email Address
             </label>
             <input
@@ -191,10 +197,7 @@ export default function ProfilePage() {
           </div>
 
           <div className="space-y-2">
-            <label
-              htmlFor="phone"
-              className="text-sm font-medium text-[#493B32]"
-            >
+            <label htmlFor="phone" className="text-sm font-medium text-[#493B32]">
               Phone Number
             </label>
             <input

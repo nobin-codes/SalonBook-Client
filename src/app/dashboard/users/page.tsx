@@ -7,8 +7,6 @@ import {
   Ban,
   CheckCircle2,
   LoaderCircle,
-  Mail,
-  Phone,
   RefreshCw,
   Search,
   ShieldCheck,
@@ -32,6 +30,11 @@ interface ManagedUser {
 
 type UserFilter = "all" | "customers" | "admins" | "active" | "blocked";
 
+interface UsersResult {
+  data: ManagedUser[];
+  error: string;
+}
+
 export default function ManageUsersPage() {
   const { data: session } = useSession();
 
@@ -46,28 +49,51 @@ export default function ManageUsersPage() {
 
   const currentUserId = session?.user?.id ?? "";
 
-  const loadUsers = useCallback(async () => {
-    setLoading(true);
-    setError("");
-
+  const fetchUsers = useCallback(async (): Promise<UsersResult> => {
     try {
       const data = await apiRequest<ManagedUser[]>("/api/users", {
         authenticated: true,
       });
 
-      setUsers(data);
+      return { data, error: "" };
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to load users.",
-      );
-    } finally {
-      setLoading(false);
+      return {
+        data: [],
+        error: err instanceof Error ? err.message : "Failed to load users.",
+      };
     }
   }, []);
 
+  const loadUsers = useCallback(async () => {
+    setLoading(true);
+    setError("");
+
+    const result = await fetchUsers();
+
+    setUsers(result.data);
+    setError(result.error);
+    setLoading(false);
+  }, [fetchUsers]);
+
   useEffect(() => {
-    void loadUsers();
-  }, [loadUsers]);
+    let isActive = true;
+
+    const load = async () => {
+      const result = await fetchUsers();
+
+      if (!isActive) return;
+
+      setUsers(result.data);
+      setError(result.error);
+      setLoading(false);
+    };
+
+    void load();
+
+    return () => {
+      isActive = false;
+    };
+  }, [fetchUsers]);
 
   const filteredUsers = useMemo(() => {
     return users.filter((user) => {

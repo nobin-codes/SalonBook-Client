@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
@@ -36,6 +36,7 @@ type ServiceForm = {
 
 export default function AddServicePage() {
   const router = useRouter();
+  const previewUrlRef = useRef<string | null>(null);
 
   const [form, setForm] = useState<ServiceForm>({
     serviceName: "",
@@ -52,16 +53,12 @@ export default function AddServicePage() {
   const [success, setSuccess] = useState("");
 
   useEffect(() => {
-    if (!imageFile) {
-      setImagePreview("");
-      return;
-    }
-
-    const previewUrl = URL.createObjectURL(imageFile);
-    setImagePreview(previewUrl);
-
-    return () => URL.revokeObjectURL(previewUrl);
-  }, [imageFile]);
+    return () => {
+      if (previewUrlRef.current) {
+        URL.revokeObjectURL(previewUrlRef.current);
+      }
+    };
+  }, []);
 
   const handleChange = (
     event: React.ChangeEvent<
@@ -100,11 +97,25 @@ export default function AddServicePage() {
       return;
     }
 
+    if (previewUrlRef.current) {
+      URL.revokeObjectURL(previewUrlRef.current);
+    }
+
+    const previewUrl = URL.createObjectURL(file);
+    previewUrlRef.current = previewUrl;
+
     setImageFile(file);
+    setImagePreview(previewUrl);
   };
 
   const handleRemoveImage = () => {
+    if (previewUrlRef.current) {
+      URL.revokeObjectURL(previewUrlRef.current);
+      previewUrlRef.current = null;
+    }
+
     setImageFile(null);
+    setImagePreview("");
 
     const input = document.getElementById(
       "service-image",
@@ -158,7 +169,6 @@ export default function AddServicePage() {
 
     try {
       setLoading(true);
-
       setSuccess("Uploading service image...");
 
       const uploadedImage = await uploadImage(imageFile);
@@ -219,7 +229,7 @@ export default function AddServicePage() {
         </h1>
 
         <p className="mt-2 text-sm text-[#817970]">
-          Add a men's grooming service to your SalonBook collection.
+          Add a men&apos;s grooming service to your SalonBook collection.
         </p>
       </div>
 

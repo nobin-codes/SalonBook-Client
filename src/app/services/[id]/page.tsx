@@ -10,7 +10,6 @@ import {
   ArrowLeft,
   CalendarDays,
   Clock3,
-  Scissors,
   CheckCircle2,
   AlertCircle,
   LoaderCircle,
@@ -33,6 +32,11 @@ type SessionUser = {
   email: string;
   role?: "admin" | "customer";
   isBlocked?: boolean;
+};
+
+type ServiceResult = {
+  data: Service | null;
+  error: string;
 };
 
 const timeSlots = [
@@ -119,29 +123,45 @@ export default function ServiceDetailsPage() {
 
   const today = getDhakaDate();
 
-  const fetchService = useCallback(async () => {
+  const fetchService = useCallback(async (): Promise<ServiceResult> => {
     try {
-      setLoading(true);
-      setError("");
-
       const data = await apiRequest<Service>(
         `/api/services/${serviceId}`,
       );
 
-      setService(data);
+      return {
+        data,
+        error: "",
+      };
     } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Unable to load this service.",
-      );
-    } finally {
-      setLoading(false);
+      return {
+        data: null,
+        error:
+          err instanceof Error
+            ? err.message
+            : "Unable to load this service.",
+      };
     }
   }, [serviceId]);
 
   useEffect(() => {
-    void fetchService();
+    let isActive = true;
+
+    const loadService = async () => {
+      const result = await fetchService();
+
+      if (!isActive) return;
+
+      setService(result.data);
+      setError(result.error);
+      setLoading(false);
+    };
+
+    void loadService();
+
+    return () => {
+      isActive = false;
+    };
   }, [fetchService]);
 
   const availableTimeSlots = timeSlots.filter((slot) => {

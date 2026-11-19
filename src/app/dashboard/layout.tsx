@@ -1,10 +1,7 @@
 
 "use client";
 
-import {
-  useEffect,
-  useState,
-} from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -36,54 +33,18 @@ type NavigationItem = {
 };
 
 const customerNavigation: NavigationItem[] = [
-  {
-    label: "Overview",
-    href: "/dashboard",
-    icon: LayoutDashboard,
-  },
-  {
-    label: "My Appointments",
-    href: "/dashboard/appointments",
-    icon: CalendarDays,
-  },
-  {
-    label: "My Profile",
-    href: "/dashboard/profile",
-    icon: UserRound,
-  },
+  { label: "Overview", href: "/dashboard", icon: LayoutDashboard },
+  { label: "My Appointments", href: "/dashboard/appointments", icon: CalendarDays },
+  { label: "My Profile", href: "/dashboard/profile", icon: UserRound },
 ];
 
 const adminNavigation: NavigationItem[] = [
-  {
-    label: "Overview",
-    href: "/dashboard",
-    icon: LayoutDashboard,
-  },
-  {
-    label: "Manage Services",
-    href: "/dashboard/services",
-    icon: Scissors,
-  },
-  {
-    label: "Appointments",
-    href: "/dashboard/appointments",
-    icon: CalendarDays,
-  },
-  {
-    label: "Manage Users",
-    href: "/dashboard/users",
-    icon: Users,
-  },
-  {
-    label: "Transactions",
-    href: "/dashboard/transactions",
-    icon: Receipt,
-  },
-  {
-    label: "My Profile",
-    href: "/dashboard/profile",
-    icon: UserRound,
-  },
+  { label: "Overview", href: "/dashboard", icon: LayoutDashboard },
+  { label: "Manage Services", href: "/dashboard/services", icon: Scissors },
+  { label: "Appointments", href: "/dashboard/appointments", icon: CalendarDays },
+  { label: "Manage Users", href: "/dashboard/users", icon: Users },
+  { label: "Transactions", href: "/dashboard/transactions", icon: Receipt },
+  { label: "My Profile", href: "/dashboard/profile", icon: UserRound },
 ];
 
 export default function DashboardLayout({
@@ -95,16 +56,15 @@ export default function DashboardLayout({
   const pathname = usePathname();
   const { data: session, isPending } = useSession();
 
-  const [menuOpen, setMenuOpen] = useState(false);
+  const [menuOpenPath, setMenuOpenPath] = useState<string | null>(null);
   const [loggingOut, setLoggingOut] = useState(false);
 
+  const menuOpen = menuOpenPath === pathname;
   const user = session?.user as DashboardUser | undefined;
   const role = user?.role ?? "customer";
   const isAdmin = role === "admin";
 
-  const navigation = isAdmin
-    ? adminNavigation
-    : customerNavigation;
+  const navigation = isAdmin ? adminNavigation : customerNavigation;
 
   const isAdminRoute =
     pathname.startsWith("/dashboard/services") ||
@@ -128,17 +88,10 @@ export default function DashboardLayout({
       return;
     }
 
-    if (
-      currentUser.role !== "admin" &&
-      isAdminRoute
-    ) {
+    if (currentUser.role !== "admin" && isAdminRoute) {
       router.replace("/dashboard");
     }
   }, [isPending, session, isAdminRoute, router]);
-
-  useEffect(() => {
-    setMenuOpen(false);
-  }, [pathname]);
 
   const handleLogout = async () => {
     try {
@@ -150,6 +103,10 @@ export default function DashboardLayout({
       console.error("Logout failed:", error);
       setLoggingOut(false);
     }
+  };
+
+  const handleNavigation = () => {
+    setMenuOpenPath(null);
   };
 
   if (isPending || !session?.user) {
@@ -168,9 +125,7 @@ export default function DashboardLayout({
   if (user?.isBlocked || (isAdminRoute && !isAdmin)) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#f8f5f0]">
-        <p className="text-sm text-[#817970]">
-          Redirecting...
-        </p>
+        <p className="text-sm text-[#817970]">Redirecting...</p>
       </div>
     );
   }
@@ -180,14 +135,11 @@ export default function DashboardLayout({
       <div className="min-h-screen lg:flex">
         <aside className="hidden w-[270px] shrink-0 flex-col border-r border-[#e9e1d8] bg-white lg:flex">
           <div className="border-b border-[#e9e1d8] px-7 py-7">
-            <Link
-              href="/"
-              className="text-2xl font-bold tracking-tight"
-            >
+            <Link href="/" className="text-2xl font-bold tracking-tight">
               Salon<span className="text-[#b47a57]">Book.</span>
             </Link>
             <p className="mt-1 text-xs tracking-wide text-[#817970]">
-              MEN'S GROOMING STUDIO
+              MEN&apos;S GROOMING STUDIO
             </p>
           </div>
 
@@ -229,7 +181,6 @@ export default function DashboardLayout({
               <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#f0e5dc] text-sm font-semibold text-[#956044]">
                 {user?.name?.charAt(0)?.toUpperCase() || "U"}
               </div>
-
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-semibold">
                   {user?.name || "User"}
@@ -241,6 +192,7 @@ export default function DashboardLayout({
             </div>
 
             <button
+              type="button"
               onClick={handleLogout}
               disabled={loggingOut}
               className="flex w-full items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium text-[#817970] transition hover:bg-red-50 hover:text-red-600 disabled:opacity-50"
@@ -255,15 +207,15 @@ export default function DashboardLayout({
           <header className="sticky top-0 z-30 flex h-[72px] items-center justify-between border-b border-[#e9e1d8] bg-white/95 px-5 backdrop-blur sm:px-8">
             <div className="flex items-center gap-3">
               <button
-                onClick={() => setMenuOpen(!menuOpen)}
+                type="button"
+                onClick={() =>
+                  setMenuOpenPath(menuOpen ? null : pathname)
+                }
                 className="rounded-lg p-2 text-[#292521] hover:bg-[#f8f5f0] lg:hidden"
                 aria-label="Toggle navigation"
+                aria-expanded={menuOpen}
               >
-                {menuOpen ? (
-                  <X size={21} />
-                ) : (
-                  <Menu size={21} />
-                )}
+                {menuOpen ? <X size={21} /> : <Menu size={21} />}
               </button>
 
               <div>
@@ -315,6 +267,7 @@ export default function DashboardLayout({
                     <Link
                       key={item.href}
                       href={item.href}
+                      onClick={handleNavigation}
                       className={`flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium ${
                         active
                           ? "bg-[#f4ece5] text-[#956044]"
@@ -328,9 +281,10 @@ export default function DashboardLayout({
                 })}
 
                 <button
+                  type="button"
                   onClick={handleLogout}
                   disabled={loggingOut}
-                  className="mt-2 flex w-full items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium text-red-600 hover:bg-red-50"
+                  className="mt-2 flex w-full items-center gap-3 rounded-lg px-3 py-3 text-sm font-medium text-red-600 hover:bg-red-50 disabled:opacity-50"
                 >
                   <LogOut size={18} />
                   {loggingOut ? "Signing out..." : "Sign out"}

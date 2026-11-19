@@ -30,6 +30,11 @@ type Service = {
   createdAt: string;
 };
 
+type ServicesResult = {
+  data: Service[];
+  error: string;
+};
+
 const categories = [
   "All Categories",
   "Haircut & Styling",
@@ -51,28 +56,52 @@ export default function ManageServicesPage() {
   const [actionId, setActionId] = useState<string | null>(null);
   const [serviceToDelete, setServiceToDelete] = useState<Service | null>(null);
 
-  const fetchServices = useCallback(async () => {
+  const fetchServices = useCallback(async (): Promise<ServicesResult> => {
     try {
-      setError("");
-      setLoading(true);
-
       const data = await apiRequest<Service[]>("/api/services/manage", {
         authenticated: true,
       });
 
-      setServices(data);
+      return { data, error: "" };
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to load services.",
-      );
-    } finally {
-      setLoading(false);
+      return {
+        data: [],
+        error:
+          err instanceof Error ? err.message : "Failed to load services.",
+      };
     }
   }, []);
 
   useEffect(() => {
-    void fetchServices();
+    let isActive = true;
+
+    const loadServices = async () => {
+      const result = await fetchServices();
+
+      if (!isActive) return;
+
+      setServices(result.data);
+      setError(result.error);
+      setLoading(false);
+    };
+
+    void loadServices();
+
+    return () => {
+      isActive = false;
+    };
   }, [fetchServices]);
+
+  const handleRefresh = async () => {
+    setLoading(true);
+    setError("");
+
+    const result = await fetchServices();
+
+    setServices(result.data);
+    setError(result.error);
+    setLoading(false);
+  };
 
   const filteredServices = useMemo(() => {
     return services.filter((service) => {
@@ -177,7 +206,7 @@ export default function ManageServicesPage() {
             Manage Services
           </h1>
           <p className="mt-2 text-sm text-[#817970]">
-            Manage your men's grooming services and pricing.
+            Manage your men&apos;s grooming services and pricing.
           </p>
         </div>
 
@@ -253,7 +282,7 @@ export default function ManageServicesPage() {
 
           <button
             type="button"
-            onClick={() => void fetchServices()}
+            onClick={() => void handleRefresh()}
             disabled={loading}
             className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#e9e1d8] px-4 py-3 text-sm font-medium text-[#51483f] transition hover:bg-[#f8f5f0] disabled:opacity-50"
           >

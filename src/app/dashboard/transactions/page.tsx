@@ -46,6 +46,11 @@ interface Transaction {
 
 type StatusFilter = "all" | TransactionStatus;
 
+interface TransactionsResult {
+  data: Transaction[];
+  error: string;
+}
+
 const statusStyles: Record<TransactionStatus, string> = {
   paid: "bg-emerald-50 text-emerald-700",
   failed: "bg-red-50 text-red-700",
@@ -103,35 +108,58 @@ export default function TransactionsPage() {
   const [statusFilter, setStatusFilter] =
     useState<StatusFilter>("all");
 
+  const fetchTransactions =
+    useCallback(async (): Promise<TransactionsResult> => {
+      try {
+        const result = await apiRequest<Transaction[]>(
+          "/api/payments/transactions",
+          { authenticated: true },
+        );
+
+        return { data: result, error: "" };
+      } catch (err) {
+        return {
+          data: [],
+          error:
+            err instanceof Error
+              ? err.message
+              : "Failed to load transactions.",
+        };
+      }
+    }, []);
+
   const loadTransactions = useCallback(async () => {
     setIsLoading(true);
     setError("");
 
-    try {
-      const result = await apiRequest<Transaction[]>(
-        "/api/payments/transactions",
-        { authenticated: true },
-      );
+    const result = await fetchTransactions();
 
-      setTransactions(result);
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Failed to load transactions.",
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+    setTransactions(result.data);
+    setError(result.error);
+    setIsLoading(false);
+  }, [fetchTransactions]);
 
   useEffect(() => {
-    if (session?.user && isAdmin) {
-      void loadTransactions();
-    } else if (session?.user && !isAdmin) {
+    if (!session?.user || !isAdmin) return;
+
+    let isActive = true;
+
+    const load = async () => {
+      const result = await fetchTransactions();
+
+      if (!isActive) return;
+
+      setTransactions(result.data);
+      setError(result.error);
       setIsLoading(false);
-    }
-  }, [session?.user, isAdmin, loadTransactions]);
+    };
+
+    void load();
+
+    return () => {
+      isActive = false;
+    };
+  }, [session?.user, isAdmin, fetchTransactions]);
 
   const paidTransactions = transactions.filter(
     (transaction) => transaction.status === "paid",

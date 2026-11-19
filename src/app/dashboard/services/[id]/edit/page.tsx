@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import {
@@ -71,51 +71,59 @@ export default function EditServicePage() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
-  const fetchService = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError("");
+  const previewUrlRef = useRef<string | null>(null);
 
-      const data = await apiRequest<Service>(
-        `/api/services/manage/${serviceId}`,
-        { authenticated: true },
-      );
+  useEffect(() => {
+    let isActive = true;
 
-      setService(data);
+    const loadService = async () => {
+      try {
+        const data = await apiRequest<Service>(
+          `/api/services/manage/${serviceId}`,
+          { authenticated: true },
+        );
 
-      setForm({
-        serviceName: data.serviceName,
-        category: data.category,
-        description: data.description,
-        price: String(data.price),
-        duration: String(data.duration),
-        status: data.status,
-      });
+        if (!isActive) return;
 
-      setImagePreview(data.image);
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Failed to load service information.",
-      );
-    } finally {
-      setLoading(false);
-    }
+        setService(data);
+
+        setForm({
+          serviceName: data.serviceName,
+          category: data.category,
+          description: data.description,
+          price: String(data.price),
+          duration: String(data.duration),
+          status: data.status,
+        });
+      } catch (err) {
+        if (!isActive) return;
+
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Failed to load service information.",
+        );
+      } finally {
+        if (isActive) {
+          setLoading(false);
+        }
+      }
+    };
+
+    void loadService();
+
+    return () => {
+      isActive = false;
+    };
   }, [serviceId]);
 
   useEffect(() => {
-    void fetchService();
-  }, [fetchService]);
-
-  useEffect(() => {
-    if (!imageFile) return;
-
-    const previewUrl = URL.createObjectURL(imageFile);
-    setImagePreview(previewUrl);
-
-    return () => URL.revokeObjectURL(previewUrl);
-  }, [imageFile]);
+    return () => {
+      if (previewUrlRef.current) {
+        URL.revokeObjectURL(previewUrlRef.current);
+      }
+    };
+  }, []);
 
   const handleChange = (
     event: React.ChangeEvent<
@@ -154,11 +162,25 @@ export default function EditServicePage() {
       return;
     }
 
+    if (previewUrlRef.current) {
+      URL.revokeObjectURL(previewUrlRef.current);
+    }
+
+    const previewUrl = URL.createObjectURL(file);
+    previewUrlRef.current = previewUrl;
+
     setImageFile(file);
+    setImagePreview(previewUrl);
   };
 
   const handleRemoveNewImage = () => {
+    if (previewUrlRef.current) {
+      URL.revokeObjectURL(previewUrlRef.current);
+      previewUrlRef.current = null;
+    }
+
     setImageFile(null);
+    setImagePreview("");
 
     const input = document.getElementById(
       "service-image",
@@ -167,8 +189,6 @@ export default function EditServicePage() {
     if (input) {
       input.value = "";
     }
-
-    setImagePreview(service?.image ?? "");
   };
 
   const handleSubmit = async (
@@ -488,11 +508,7 @@ export default function EditServicePage() {
               </p>
               {imageFile && (
                 <p className="mt-1 text-xs text-[#817970]">
-                  {(
-                    imageFile.size /
-                    (1024 * 1024)
-                  ).toFixed(2)}{" "}
-                  MB
+                  {(imageFile.size / (1024 * 1024)).toFixed(2)} MB
                 </p>
               )}
             </div>

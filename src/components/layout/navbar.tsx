@@ -2,16 +2,18 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import {
   ArrowRight,
+  CalendarDays,
+  ChevronDown,
+  LayoutDashboard,
+  LogOut,
   Menu,
   Scissors,
-  X,
-  LogOut,
-  LayoutDashboard,
   UserRound,
+  X,
   LoaderCircle,
 } from "lucide-react";
 import { signOut, useSession } from "@/lib/auth-client";
@@ -30,9 +32,11 @@ type NavbarUser = {
 
 export default function Navbar() {
   const router = useRouter();
+  const pathname = usePathname();
   const { data: session, isPending } = useSession();
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isAccountOpen, setIsAccountOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
 
   const user = session?.user as NavbarUser | undefined;
@@ -45,6 +49,7 @@ export default function Navbar() {
     try {
       setLoggingOut(true);
       setIsMenuOpen(false);
+      setIsAccountOpen(false);
 
       await signOut();
 
@@ -56,40 +61,66 @@ export default function Navbar() {
     }
   };
 
-  const closeMenu = () => setIsMenuOpen(false);
+  const closeMenu = () => {
+    setIsMenuOpen(false);
+    setIsAccountOpen(false);
+  };
 
   const getInitial = (name?: string) =>
     name?.trim().charAt(0).toUpperCase() || "U";
 
+  const isActive = (href: string) =>
+    href === "/" ? pathname === "/" : pathname.startsWith(href);
+
   return (
-    <header className="sticky top-0 z-50 border-b border-[#e9e1d8] bg-[#f8f5f0]/95 backdrop-blur-md">
-      <nav className="container flex h-[76px] items-center justify-between">
+    <header className="sticky top-0 z-50 border-b border-[#e9e1d8]/80 bg-[#f8f5f0]/95 backdrop-blur-xl">
+      <nav
+        aria-label="Main navigation"
+        className="container flex h-[76px] items-center justify-between"
+      >
+        {/* Brand */}
         <Link
           href="/"
           onClick={closeMenu}
-          className="flex items-center gap-2.5"
+          className="group flex shrink-0 items-center gap-3"
         >
-          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#292521] text-white">
-            <Scissors size={19} strokeWidth={1.7} />
+          <span className="flex size-10 items-center justify-center rounded-full bg-[#292521] text-[#f5f1e9] transition-transform duration-300 group-hover:rotate-[-8deg]">
+            <Scissors size={19} strokeWidth={1.6} />
           </span>
 
-          <span className="text-[23px] font-semibold tracking-[-1px]">
+          <span className="text-[23px] font-semibold tracking-[-1.2px] text-[#292521]">
             Salon<span className="font-normal text-[#b47a57]">Book</span>
           </span>
         </Link>
 
-        <div className="hidden items-center gap-9 md:flex">
-          {navigation.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="text-sm font-medium text-[#817970] transition-colors hover:text-[#b47a57]"
-            >
-              {item.label}
-            </Link>
-          ))}
+        {/* Desktop navigation */}
+        <div className="absolute left-1/2 hidden h-full -translate-x-1/2 items-center gap-1 md:flex">
+          {navigation.map((item) => {
+            const active = isActive(item.href);
+
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`relative flex h-full items-center px-5 text-[13px] font-medium transition-colors duration-200 ${
+                  active
+                    ? "text-[#292521]"
+                    : "text-[#817970] hover:text-[#b47a57]"
+                }`}
+              >
+                {item.label}
+
+                <span
+                  className={`absolute bottom-[19px] left-5 right-5 h-[2px] rounded-full bg-[#b47a57] transition-transform duration-300 ${
+                    active ? "scale-x-100" : "scale-x-0"
+                  }`}
+                />
+              </Link>
+            );
+          })}
         </div>
 
+        {/* Desktop account actions */}
         <div className="hidden items-center gap-5 md:flex">
           {isPending ? (
             <LoaderCircle
@@ -97,16 +128,18 @@ export default function Navbar() {
               className="animate-spin text-[#b47a57]"
             />
           ) : user ? (
-            <>
-              <Link
-                href={dashboardHref}
-                className="flex items-center gap-2 text-sm font-medium text-[#51483f] transition-colors hover:text-[#b47a57]"
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setIsAccountOpen(!isAccountOpen)}
+                aria-expanded={isAccountOpen}
+                aria-label="Open account menu"
+                className={`flex items-center gap-3 rounded-full border px-2.5 py-2 transition-all duration-200 ${
+                  isAccountOpen
+                    ? "border-[#c39a73] bg-white"
+                    : "border-transparent hover:border-[#e5d9cb] hover:bg-white/70"
+                }`}
               >
-                <LayoutDashboard size={17} />
-                {dashboardLabel}
-              </Link>
-
-              <div className="flex items-center gap-3 border-l border-[#e9e1d8] pl-5">
                 {user.image ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
@@ -120,105 +153,171 @@ export default function Navbar() {
                   </span>
                 )}
 
-                <div className="max-w-[130px]">
-                  <p className="truncate text-sm font-semibold text-[#292521]">
+                <span className="max-w-[115px] text-left">
+                  <span className="block truncate text-[13px] font-semibold text-[#292521]">
                     {user.name}
-                  </p>
-                  <p className="text-[11px] text-[#817970]">
+                  </span>
+                  <span className="block text-[10px] font-medium text-[#91877c]">
                     {isAdmin ? "Administrator" : "Customer"}
-                  </p>
-                </div>
-              </div>
+                  </span>
+                </span>
 
-              <button
-                type="button"
-                onClick={handleLogout}
-                disabled={loggingOut}
-                className="flex items-center gap-2 text-sm font-medium text-[#817970] transition-colors hover:text-red-600 disabled:opacity-50"
-              >
-                {loggingOut ? (
-                  <LoaderCircle size={16} className="animate-spin" />
-                ) : (
-                  <LogOut size={16} />
-                )}
-                Sign Out
+                <ChevronDown
+                  size={15}
+                  className={`text-[#817970] transition-transform duration-200 ${
+                    isAccountOpen ? "rotate-180" : ""
+                  }`}
+                />
               </button>
-            </>
+
+              {isAccountOpen && (
+                <div className="absolute right-0 top-[calc(100%+14px)] w-[245px] overflow-hidden rounded-2xl border border-[#e9e1d8] bg-[#fffdf9] p-2 shadow-[0_18px_50px_rgba(41,37,33,0.12)]">
+                  <div className="border-b border-[#eee7de] px-3 py-3">
+                    <p className="truncate text-sm font-semibold text-[#292521]">
+                      {user.name}
+                    </p>
+                    <p className="mt-1 truncate text-xs text-[#91877c]">
+                      {user.email}
+                    </p>
+                  </div>
+
+                  <div className="space-y-1 py-2">
+                    <Link
+                      href={dashboardHref}
+                      onClick={() => setIsAccountOpen(false)}
+                      className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-medium text-[#51483f] transition-colors hover:bg-[#f5f1e9] hover:text-[#a8794e]"
+                    >
+                      <LayoutDashboard size={16} />
+                      {dashboardLabel}
+                    </Link>
+
+                    <Link
+                      href="/dashboard/profile"
+                      onClick={() => setIsAccountOpen(false)}
+                      className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-medium text-[#51483f] transition-colors hover:bg-[#f5f1e9] hover:text-[#a8794e]"
+                    >
+                      <UserRound size={16} />
+                      My Profile
+                    </Link>
+                  </div>
+
+                  <div className="border-t border-[#eee7de] pt-2">
+                    <button
+                      type="button"
+                      onClick={handleLogout}
+                      disabled={loggingOut}
+                      className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-[13px] font-medium text-[#b44d43] transition-colors hover:bg-[#fbefec] disabled:opacity-50"
+                    >
+                      {loggingOut ? (
+                        <LoaderCircle
+                          size={16}
+                          className="animate-spin"
+                        />
+                      ) : (
+                        <LogOut size={16} />
+                      )}
+                      Sign Out
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
           ) : (
             <>
               <Link
                 href="/login"
-                className="text-sm font-medium transition-colors hover:text-[#b47a57]"
+                className="text-[13px] font-semibold text-[#51483f] transition-colors hover:text-[#b47a57]"
               >
                 Sign In
               </Link>
 
               <Link
                 href="/register"
-                className="flex h-11 items-center gap-2 rounded-full bg-[#292521] px-5 text-sm font-medium !text-white transition-colors hover:bg-[#b47a57]"
+                className="group inline-flex h-11 items-center gap-3 rounded-full bg-[#292521] px-5 text-[13px] font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#a8794e]"
               >
-                <span className="!text-white">Book an Appointment</span>
-                <ArrowRight size={15} className="text-white" />
+                Book an Appointment
+                <ArrowRight
+                  size={15}
+                  className="transition-transform duration-300 group-hover:translate-x-1"
+                />
               </Link>
             </>
           )}
         </div>
 
+        {/* Mobile menu button */}
         <button
           type="button"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           aria-label={isMenuOpen ? "Close menu" : "Open menu"}
           aria-expanded={isMenuOpen}
-          className="flex h-10 w-10 items-center justify-center rounded-full border border-[#e9e1d8] md:hidden"
+          className="flex size-10 items-center justify-center rounded-full border border-[#e5dbcf] text-[#292521] transition-colors hover:bg-[#eee7de] md:hidden"
         >
-          {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
+          {isMenuOpen ? <X size={19} /> : <Menu size={19} />}
         </button>
       </nav>
 
+      {/* Mobile navigation */}
       {isMenuOpen && (
-        <div className="border-t border-[#e9e1d8] bg-[#f8f5f0] px-6 py-6 md:hidden">
-          <div className="container flex flex-col gap-5">
-            {navigation.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={closeMenu}
-                className="text-sm font-medium text-[#817970]"
-              >
-                {item.label}
-              </Link>
-            ))}
+        <div className="border-t border-[#e9e1d8] bg-[#f8f5f0] px-5 pb-6 pt-5 md:hidden">
+          <div className="container flex flex-col">
+            <div className="space-y-1">
+              {navigation.map((item) => {
+                const active = isActive(item.href);
 
-            <div className="flex flex-col gap-4 border-t border-[#e9e1d8] pt-5">
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={closeMenu}
+                    className={`flex items-center justify-between rounded-xl px-4 py-3.5 text-sm font-semibold transition-colors ${
+                      active
+                        ? "bg-[#eee7de] text-[#292521]"
+                        : "text-[#817970] hover:bg-[#eee7de] hover:text-[#292521]"
+                    }`}
+                  >
+                    {item.label}
+                    {active && (
+                      <span className="size-1.5 rounded-full bg-[#b47a57]" />
+                    )}
+                  </Link>
+                );
+              })}
+            </div>
+
+            <div className="mt-5 border-t border-[#e9e1d8] pt-5">
               {isPending ? (
-                <div className="flex justify-center py-2">
+                <div className="flex justify-center py-4">
                   <LoaderCircle
-                    size={20}
+                    size={21}
                     className="animate-spin text-[#b47a57]"
                   />
                 </div>
               ) : user ? (
-                <>
-                  <div className="flex items-center gap-3">
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3 rounded-2xl border border-[#e9e1d8] bg-[#fffdf9] p-3">
                     {user.image ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
                         src={user.image}
                         alt={user.name}
-                        className="size-10 rounded-full border border-[#e9e1d8] object-cover"
+                        className="size-11 rounded-full border border-[#e9e1d8] object-cover"
                       />
                     ) : (
-                      <span className="flex size-10 items-center justify-center rounded-full bg-[#292521] text-sm font-semibold text-white">
+                      <span className="flex size-11 items-center justify-center rounded-full bg-[#292521] text-sm font-semibold text-white">
                         {getInitial(user.name)}
                       </span>
                     )}
 
-                    <div className="min-w-0">
+                    <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-semibold text-[#292521]">
                         {user.name}
                       </p>
                       <p className="truncate text-xs text-[#817970]">
                         {user.email}
+                      </p>
+                      <p className="mt-1 text-[10px] font-semibold uppercase tracking-wider text-[#b47a57]">
+                        {isAdmin ? "Administrator" : "Customer"}
                       </p>
                     </div>
                   </div>
@@ -226,7 +325,7 @@ export default function Navbar() {
                   <Link
                     href={dashboardHref}
                     onClick={closeMenu}
-                    className="flex h-11 items-center gap-2 text-sm font-medium text-[#51483f]"
+                    className="flex h-11 items-center gap-3 rounded-xl px-3 text-sm font-medium text-[#51483f] transition-colors hover:bg-[#eee7de]"
                   >
                     <LayoutDashboard size={17} />
                     {dashboardLabel}
@@ -235,7 +334,7 @@ export default function Navbar() {
                   <Link
                     href="/dashboard/profile"
                     onClick={closeMenu}
-                    className="flex h-11 items-center gap-2 text-sm font-medium text-[#51483f]"
+                    className="flex h-11 items-center gap-3 rounded-xl px-3 text-sm font-medium text-[#51483f] transition-colors hover:bg-[#eee7de]"
                   >
                     <UserRound size={17} />
                     My Profile
@@ -245,22 +344,25 @@ export default function Navbar() {
                     type="button"
                     onClick={handleLogout}
                     disabled={loggingOut}
-                    className="flex h-11 items-center gap-2 text-left text-sm font-medium text-red-600 disabled:opacity-50"
+                    className="flex h-11 w-full items-center gap-3 rounded-xl px-3 text-left text-sm font-medium text-[#b44d43] transition-colors hover:bg-[#fbefec] disabled:opacity-50"
                   >
                     {loggingOut ? (
-                      <LoaderCircle size={17} className="animate-spin" />
+                      <LoaderCircle
+                        size={17}
+                        className="animate-spin"
+                      />
                     ) : (
                       <LogOut size={17} />
                     )}
                     Sign Out
                   </button>
-                </>
+                </div>
               ) : (
-                <>
+                <div className="flex flex-col gap-3">
                   <Link
                     href="/login"
                     onClick={closeMenu}
-                    className="text-sm font-medium"
+                    className="flex h-11 items-center justify-center rounded-full border border-[#ded3c5] text-sm font-semibold text-[#51483f] transition-colors hover:bg-[#eee7de]"
                   >
                     Sign In
                   </Link>
@@ -268,16 +370,19 @@ export default function Navbar() {
                   <Link
                     href="/register"
                     onClick={closeMenu}
-                    className="flex h-11 items-center justify-center gap-2 rounded-full bg-[#292521] text-sm font-medium !text-white"
+                    className="group flex h-12 items-center justify-center gap-3 rounded-full bg-[#292521] text-sm font-semibold text-white transition-colors hover:bg-[#a8794e]"
                   >
-                    <span className="!text-white">
-                      Book an Appointment
-                    </span>
-                    <ArrowRight size={15} className="text-white" />
+                    <CalendarDays size={16} />
+                    Book an Appointment
+                    <ArrowRight size={15} />
                   </Link>
-                </>
+                </div>
               )}
             </div>
+
+            <p className="mt-6 text-center text-[10px] font-medium uppercase tracking-[2px] text-[#a39a8e]">
+              SalonBook · Your style, your statement
+            </p>
           </div>
         </div>
       )}

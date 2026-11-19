@@ -133,9 +133,6 @@ export default function AppointmentsPage() {
   } | null>(null);
 
   const loadAppointments = useCallback(async () => {
-    setIsLoading(true);
-    setError("");
-
     try {
       const appointments = await apiRequest<Appointment[]>(
         "/api/appointments",
@@ -150,6 +147,7 @@ export default function AppointmentsPage() {
       );
 
       setItems(results);
+      setError("");
     } catch (err) {
       setError(
         err instanceof Error
@@ -161,11 +159,64 @@ export default function AppointmentsPage() {
     }
   }, []);
 
+  // Fetch initial appointments without triggering synchronous
+  // state updates directly from the effect.
   useEffect(() => {
-    if (session?.user) {
-      void loadAppointments();
+    if (!session?.user) {
+      return;
     }
-  }, [session?.user, loadAppointments]);
+
+    let isActive = true;
+
+    const fetchInitialAppointments = async () => {
+      try {
+        const appointments = await apiRequest<Appointment[]>(
+          "/api/appointments",
+          { authenticated: true },
+        );
+
+        if (!isActive) {
+          return;
+        }
+
+        const results: AppointmentItem[] = appointments.map(
+          (appointment) => ({
+            appointment,
+            service: appointment.service ?? null,
+          }),
+        );
+
+        setItems(results);
+        setError("");
+      } catch (err) {
+        if (!isActive) {
+          return;
+        }
+
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Failed to load appointments.",
+        );
+      } finally {
+        if (isActive) {
+          setIsLoading(false);
+        }
+      }
+    };
+
+    void fetchInitialAppointments();
+
+    return () => {
+      isActive = false;
+    };
+  }, [session?.user]);
+
+  const handleRefresh = () => {
+    setIsLoading(true);
+    setError("");
+    void loadAppointments();
+  };
 
   const handleStatusUpdate = async (
     appointmentId: string,
@@ -190,6 +241,7 @@ export default function AppointmentsPage() {
         result.message || `Appointment ${status} successfully.`,
       );
 
+      setIsLoading(true);
       await loadAppointments();
     } catch (err) {
       setError(
@@ -278,7 +330,7 @@ export default function AppointmentsPage() {
 
         <button
           type="button"
-          onClick={() => void loadAppointments()}
+          onClick={handleRefresh}
           disabled={isLoading}
           className="inline-flex h-10 items-center justify-center gap-2 self-start rounded-full border border-[#e9e1d8] bg-white px-4 text-sm font-medium text-[#746c64] transition hover:bg-[#f4ece5] disabled:opacity-50 sm:self-auto"
         >
@@ -337,7 +389,7 @@ export default function AppointmentsPage() {
           <p>{error}</p>
           <button
             type="button"
-            onClick={() => void loadAppointments()}
+            onClick={handleRefresh}
             className="font-semibold underline"
           >
             Try again

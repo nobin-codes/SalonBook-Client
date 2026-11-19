@@ -233,7 +233,7 @@ export default function LoginPage() {
 
           <div className="relative z-10 flex items-center gap-2 text-sm font-medium tracking-[0.2em] text-[#e9cdb9]">
             <Scissors size={18} />
-            THE GENTLEMAN'S STANDARD
+            THE GENTLEMAN&apos;S STANDARD
           </div>
 
           <div className="relative z-10 max-w-lg">

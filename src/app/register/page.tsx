@@ -338,7 +338,7 @@ export default function RegisterPage() {
 
           <div className="relative z-10 flex items-center gap-2 text-sm font-medium tracking-[0.2em] text-[#e9cdb9]">
             <Scissors size={18} />
-            THE GENTLEMAN'S STANDARD
+            THE GENTLEMAN&apos;S STANDARD
           </div>
 
           <div className="relative z-10 max-w-lg">
@@ -349,8 +349,7 @@ export default function RegisterPage() {
               Your time. Your style. Your barber.
             </h2>
             <p className="mt-6 max-w-md text-base leading-7 text-white/65">
-              Discover professional men's grooming services and book your next
-              appointment with confidence.
+              Discover professional men&apos;s grooming services and book your next
             </p>
           </div>
 
