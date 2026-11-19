@@ -609,15 +609,15 @@ export default function DashboardPage() {
             className="flex items-center justify-between rounded-2xl bg-[#292521] p-5 text-white transition hover:bg-[#403932]"
           >
             <div>
-              <p className="font-semibold !text-white">
-  Add a new service
-</p>
-<p className="mt-1 text-sm !text-white">
-  Expand your salon service menu
-</p>
-            </div>
-            <ArrowUpRight size={20} />
-          </Link>
+  <p className="font-semibold !text-white">
+    Add a new service
+  </p>
+  <p className="mt-1 text-sm !text-white">
+    Expand your salon service menu
+  </p>
+</div>
+<ArrowUpRight size={20} className="text-white" />
+</Link>
 
           <Link
             href="/dashboard/appointments"
