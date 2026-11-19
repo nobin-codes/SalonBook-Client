@@ -16,6 +16,7 @@ import {
   X,
   LoaderCircle,
 } from "lucide-react";
+import { toast } from "sonner";
 import { signOut, useSession } from "@/lib/auth-client";
 
 const navigation = [
@@ -46,17 +47,30 @@ export default function Navbar() {
   const dashboardLabel = isAdmin ? "Admin Dashboard" : "My Dashboard";
 
   const handleLogout = async () => {
+    if (loggingOut) return;
+
+    setLoggingOut(true);
+
     try {
-      setLoggingOut(true);
+      const result = await signOut();
+
+      if (result.error) {
+        throw new Error(result.error.message || "Sign out failed.");
+      }
+
       setIsMenuOpen(false);
       setIsAccountOpen(false);
-
-      await signOut();
 
       router.replace("/");
       router.refresh();
     } catch (error) {
       console.error("Logout failed:", error);
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Unable to sign out. Please try again.",
+      );
+    } finally {
       setLoggingOut(false);
     }
   };
