@@ -73,7 +73,7 @@ export default function Navbar() {
     href === "/" ? pathname === "/" : pathname.startsWith(href);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[#e9e1d8]/80 bg-[#f8f5f0]/95 backdrop-blur-xl">
+    <header className="sticky top-0 z-50 border-b border-[#e9e1d8] bg-[#f8f5f0]/95 shadow-[0_2px_12px_rgba(41,37,33,0.04)] backdrop-blur-xl">
       <nav
         aria-label="Main navigation"
         className="container flex h-[76px] items-center justify-between"
@@ -100,16 +100,16 @@ export default function Navbar() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`relative flex h-full items-center px-5 text-[13px] font-medium transition-colors duration-200 ${
+                className={`relative flex h-full items-center px-5 text-[13px] font-semibold transition-colors duration-200 ${
                   active
                     ? "text-[#292521]"
-                    : "text-[#817970] hover:text-[#b47a57]"
+                    : "text-[#746c64] hover:text-[#956044]"
                 }`}
               >
                 {item.label}
 
                 <span
-                  className={`absolute bottom-[19px] left-5 right-5 h-[2px] rounded-full bg-[#b47a57] transition-transform duration-300 ${
+                  className={`absolute bottom-[19px] left-5 right-5 h-[2px] rounded-full bg-[#956044] transition-transform duration-300 ${
                     active ? "scale-x-100" : "scale-x-0"
                   }`}
                 />
@@ -130,7 +130,7 @@ export default function Navbar() {
                 className={`flex items-center gap-3 rounded-full border px-2.5 py-2 transition-all duration-200 ${
                   isAccountOpen
                     ? "border-[#c39a73] bg-white"
-                    : "border-transparent hover:border-[#e5d9cb] hover:bg-white/70"
+                    : "border-transparent hover:border-[#e5d9cb] hover:bg-white"
                 }`}
               >
                 {user.image ? (
@@ -150,14 +150,14 @@ export default function Navbar() {
                   <span className="block truncate text-[13px] font-semibold text-[#292521]">
                     {user.name}
                   </span>
-                  <span className="block text-[10px] font-medium text-[#91877c]">
+                  <span className="block text-[10px] font-medium text-[#817970]">
                     {isAdmin ? "Administrator" : "Customer"}
                   </span>
                 </span>
 
                 <ChevronDown
                   size={15}
-                  className={`text-[#817970] transition-transform duration-200 ${
+                  className={`text-[#746c64] transition-transform duration-200 ${
                     isAccountOpen ? "rotate-180" : ""
                   }`}
                 />
@@ -169,7 +169,7 @@ export default function Navbar() {
                     <p className="truncate text-sm font-semibold text-[#292521]">
                       {user.name}
                     </p>
-                    <p className="mt-1 truncate text-xs text-[#91877c]">
+                    <p className="mt-1 truncate text-xs text-[#746c64]">
                       {user.email}
                     </p>
                   </div>
@@ -178,7 +178,7 @@ export default function Navbar() {
                     <Link
                       href={dashboardHref}
                       onClick={() => setIsAccountOpen(false)}
-                      className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-medium text-[#51483f] transition-colors hover:bg-[#f5f1e9] hover:text-[#a8794e]"
+                      className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-semibold text-[#51483f] transition-colors hover:bg-[#f5f1e9] hover:text-[#956044]"
                     >
                       <LayoutDashboard size={16} />
                       {dashboardLabel}
@@ -187,7 +187,7 @@ export default function Navbar() {
                     <Link
                       href="/dashboard/profile"
                       onClick={() => setIsAccountOpen(false)}
-                      className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-medium text-[#51483f] transition-colors hover:bg-[#f5f1e9] hover:text-[#a8794e]"
+                      className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-semibold text-[#51483f] transition-colors hover:bg-[#f5f1e9] hover:text-[#956044]"
                     >
                       <UserRound size={16} />
                       My Profile
@@ -199,14 +199,14 @@ export default function Navbar() {
                       type="button"
                       onClick={handleLogout}
                       disabled={loggingOut}
-                      className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-[13px] font-medium text-[#b44d43] transition-colors hover:bg-[#fbefec] disabled:opacity-50"
+                      className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-[13px] font-semibold text-[#a8322b] transition-colors hover:bg-[#fbefec] disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       {loggingOut ? (
                         <LoaderCircle size={16} className="animate-spin" />
                       ) : (
                         <LogOut size={16} />
                       )}
-                      Sign Out
+                      {loggingOut ? "Signing out..." : "Sign Out"}
                     </button>
                   </div>
                 </div>
@@ -216,14 +216,14 @@ export default function Navbar() {
             <>
               <Link
                 href="/login"
-                className="text-[13px] font-semibold text-[#51483f] transition-colors hover:text-[#b47a57]"
+                className="text-[13px] font-semibold text-[#51483f] transition-colors hover:text-[#956044]"
               >
                 Sign In
               </Link>
 
               <Link
                 href="/register"
-                className="group inline-flex h-11 items-center gap-3 rounded-full bg-[#292521] px-5 text-[13px] font-semibold text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#a8794e]"
+                className="group inline-flex h-11 items-center gap-3 rounded-full bg-[#956044] px-5 text-[13px] font-semibold !text-white shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#75472F] hover:!text-white hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#956044]"
               >
                 Book an Appointment
                 <ArrowRight
@@ -241,7 +241,7 @@ export default function Navbar() {
           onClick={() => setIsMenuOpen(!isMenuOpen)}
           aria-label={isMenuOpen ? "Close menu" : "Open menu"}
           aria-expanded={isMenuOpen}
-          className="flex size-10 items-center justify-center rounded-full border border-[#e5dbcf] text-[#292521] transition-colors hover:bg-[#eee7de] md:hidden"
+          className="flex size-10 items-center justify-center rounded-full border border-[#ded3c5] bg-white text-[#292521] transition-colors hover:bg-[#eee7de] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#956044] md:hidden"
         >
           {isMenuOpen ? <X size={19} /> : <Menu size={19} />}
         </button>
@@ -263,12 +263,12 @@ export default function Navbar() {
                     className={`flex items-center justify-between rounded-xl px-4 py-3.5 text-sm font-semibold transition-colors ${
                       active
                         ? "bg-[#eee7de] text-[#292521]"
-                        : "text-[#817970] hover:bg-[#eee7de] hover:text-[#292521]"
+                        : "text-[#51483f] hover:bg-[#eee7de] hover:text-[#292521]"
                     }`}
                   >
                     {item.label}
                     {active && (
-                      <span className="size-1.5 rounded-full bg-[#b47a57]" />
+                      <span className="size-1.5 rounded-full bg-[#956044]" />
                     )}
                   </Link>
                 );
@@ -278,7 +278,7 @@ export default function Navbar() {
             <div className="mt-5 border-t border-[#e9e1d8] pt-5">
               {user ? (
                 <div className="space-y-3">
-                  <div className="flex items-center gap-3 rounded-2xl border border-[#e9e1d8] bg-[#fffdf9] p-3">
+                  <div className="flex items-center gap-3 rounded-2xl border border-[#e9e1d8] bg-white p-3">
                     {user.image ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
@@ -296,10 +296,10 @@ export default function Navbar() {
                       <p className="truncate text-sm font-semibold text-[#292521]">
                         {user.name}
                       </p>
-                      <p className="truncate text-xs text-[#817970]">
+                      <p className="truncate text-xs text-[#746c64]">
                         {user.email}
                       </p>
-                      <p className="mt-1 text-[10px] font-semibold uppercase tracking-wider text-[#b47a57]">
+                      <p className="mt-1 text-[10px] font-semibold uppercase tracking-wider text-[#956044]">
                         {isAdmin ? "Administrator" : "Customer"}
                       </p>
                     </div>
@@ -308,7 +308,7 @@ export default function Navbar() {
                   <Link
                     href={dashboardHref}
                     onClick={closeMenu}
-                    className="flex h-11 items-center gap-3 rounded-xl px-3 text-sm font-medium text-[#51483f] transition-colors hover:bg-[#eee7de]"
+                    className="flex h-11 items-center gap-3 rounded-xl px-3 text-sm font-semibold text-[#51483f] transition-colors hover:bg-[#eee7de]"
                   >
                     <LayoutDashboard size={17} />
                     {dashboardLabel}
@@ -317,7 +317,7 @@ export default function Navbar() {
                   <Link
                     href="/dashboard/profile"
                     onClick={closeMenu}
-                    className="flex h-11 items-center gap-3 rounded-xl px-3 text-sm font-medium text-[#51483f] transition-colors hover:bg-[#eee7de]"
+                    className="flex h-11 items-center gap-3 rounded-xl px-3 text-sm font-semibold text-[#51483f] transition-colors hover:bg-[#eee7de]"
                   >
                     <UserRound size={17} />
                     My Profile
@@ -327,14 +327,14 @@ export default function Navbar() {
                     type="button"
                     onClick={handleLogout}
                     disabled={loggingOut}
-                    className="flex h-11 w-full items-center gap-3 rounded-xl px-3 text-left text-sm font-medium text-[#b44d43] transition-colors hover:bg-[#fbefec] disabled:opacity-50"
+                    className="flex h-11 w-full items-center gap-3 rounded-xl px-3 text-left text-sm font-semibold text-[#a8322b] transition-colors hover:bg-[#fbefec] disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     {loggingOut ? (
                       <LoaderCircle size={17} className="animate-spin" />
                     ) : (
                       <LogOut size={17} />
                     )}
-                    Sign Out
+                    {loggingOut ? "Signing out..." : "Sign Out"}
                   </button>
                 </div>
               ) : (
@@ -342,7 +342,7 @@ export default function Navbar() {
                   <Link
                     href="/login"
                     onClick={closeMenu}
-                    className="flex h-11 items-center justify-center rounded-full border border-[#ded3c5] text-sm font-semibold text-[#51483f] transition-colors hover:bg-[#eee7de]"
+                    className="flex h-11 items-center justify-center rounded-full border border-[#ded3c5] bg-white text-sm font-semibold text-[#51483f] transition-colors hover:bg-[#eee7de] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#956044]"
                   >
                     Sign In
                   </Link>
@@ -350,7 +350,7 @@ export default function Navbar() {
                   <Link
                     href="/register"
                     onClick={closeMenu}
-                    className="group flex h-12 items-center justify-center gap-3 rounded-full bg-[#292521] text-sm font-semibold text-white transition-colors hover:bg-[#a8794e]"
+                    className="group flex h-12 items-center justify-center gap-3 rounded-full bg-[#292521] text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#956044] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#956044]"
                   >
                     <CalendarDays size={16} />
                     Book an Appointment
@@ -360,7 +360,7 @@ export default function Navbar() {
               )}
             </div>
 
-            <p className="mt-6 text-center text-[10px] font-medium uppercase tracking-[2px] text-[#a39a8e]">
+            <p className="mt-6 text-center text-[10px] font-medium uppercase tracking-[2px] text-[#817970]">
               SalonBook · Your style, your statement
             </p>
           </div>
