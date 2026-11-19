@@ -51,6 +51,42 @@ const statusStyles: Record<TransactionStatus, string> = {
   failed: "bg-red-50 text-red-700",
 };
 
+// Appointment dates are stored as YYYY-MM-DD.
+// Parse them as UTC to prevent timezone-related date shifts.
+const formatAppointmentDate = (date: string) => {
+  const [year, month, day] = date.split("-").map(Number);
+
+  if (
+    !year ||
+    !month ||
+    !day ||
+    month < 1 ||
+    month > 12 ||
+    day < 1 ||
+    day > 31
+  ) {
+    return date;
+  }
+
+  const parsedDate = new Date(Date.UTC(year, month - 1, day));
+
+  if (
+    parsedDate.getUTCFullYear() !== year ||
+    parsedDate.getUTCMonth() !== month - 1 ||
+    parsedDate.getUTCDate() !== day
+  ) {
+    return date;
+  }
+
+  return parsedDate.toLocaleDateString("en-US", {
+    timeZone: "UTC",
+    weekday: "short",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  });
+};
+
 export default function TransactionsPage() {
   const { data: session } = useSession();
 
@@ -123,6 +159,7 @@ export default function TransactionsPage() {
       year: "numeric",
       hour: "numeric",
       minute: "2-digit",
+      timeZone: "Asia/Dhaka",
     });
 
   const filteredTransactions = useMemo(() => {
@@ -416,7 +453,9 @@ export default function TransactionsPage() {
                       </p>
                       <p className="mt-1 text-sm font-semibold text-[#292521]">
                         {transaction.appointment
-                          ? transaction.appointment.appointmentDate
+                          ? formatAppointmentDate(
+                              transaction.appointment.appointmentDate,
+                            )
                           : "Unavailable"}
                       </p>
                       <p className="mt-1 text-xs text-[#817970]">
