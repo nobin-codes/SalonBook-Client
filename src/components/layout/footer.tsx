@@ -19,7 +19,7 @@ export default function Footer() {
             </Link>
 
             <p className="mt-5 max-w-xs text-sm leading-7 text-white/55">
-              Your grooming, your style. Discover trusted men's haircuts,
+              Your grooming, your style. Discover trusted men&apos;s haircuts,
               beard care, and grooming services with SalonBook.
             </p>
 
@@ -69,7 +69,7 @@ export default function Footer() {
             <h3 className="text-sm font-semibold">Get in touch</h3>
             <p className="mt-6 text-sm leading-7 text-white/55">
               Need help with a booking or have a question about our grooming
-              services? We'd be happy to help.
+              services? We&apos;d be happy to help.
             </p>
 
             <a
