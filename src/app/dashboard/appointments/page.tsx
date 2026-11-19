@@ -80,6 +80,9 @@ export default function AppointmentsPage() {
   const [statusFilter, setStatusFilter] =
     useState<StatusFilter>("all");
   const [processingId, setProcessingId] = useState<string | null>(null);
+  const [paymentProcessingId, setPaymentProcessingId] =
+    useState<string | null>(null);
+
   const [confirmAction, setConfirmAction] = useState<{
     id: string;
     status: "confirmed" | "cancelled";
@@ -152,6 +155,37 @@ export default function AppointmentsPage() {
       );
     } finally {
       setProcessingId(null);
+    }
+  };
+
+  const handlePayment = async (appointmentId: string) => {
+    setPaymentProcessingId(appointmentId);
+    setError("");
+    setActionMessage("");
+
+    try {
+      const result = await apiRequest<{ checkoutUrl: string }>(
+        "/api/payments/create-checkout-session",
+        {
+          method: "POST",
+          authenticated: true,
+          body: JSON.stringify({ appointmentId }),
+        },
+      );
+
+      if (!result.checkoutUrl) {
+        throw new Error("Stripe checkout URL was not returned.");
+      }
+
+      window.location.assign(result.checkoutUrl);
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Unable to start payment. Please try again.",
+      );
+
+      setPaymentProcessingId(null);
     }
   };
 
@@ -471,7 +505,9 @@ export default function AppointmentsPage() {
                 {(isAdmin
                   ? appointment.status === "pending" ||
                     appointment.status === "confirmed"
-                  : appointment.status === "pending") && (
+                  : appointment.status === "pending" ||
+                    (appointment.status === "confirmed" &&
+                      appointment.paymentStatus === "unpaid")) && (
                   <div className="flex flex-wrap items-center justify-end gap-2 border-t border-[#e9e1d8] pt-4">
                     {confirmAction?.id === appointment._id ? (
                       <>
@@ -525,19 +561,41 @@ export default function AppointmentsPage() {
                             </button>
                           )}
 
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setConfirmAction({
-                              id: appointment._id,
-                              status: "cancelled",
-                            })
-                          }
-                          className="flex items-center gap-2 rounded-full border border-red-200 px-4 py-2.5 text-xs font-semibold text-red-600 transition hover:bg-red-50"
-                        >
-                          <X size={14} />
-                          Cancel appointment
-                        </button>
+                        {!isAdmin &&
+                          appointment.status === "confirmed" &&
+                          appointment.paymentStatus === "unpaid" && (
+                            <button
+                              type="button"
+                              disabled={
+                                paymentProcessingId === appointment._id
+                              }
+                              onClick={() =>
+                                void handlePayment(appointment._id)
+                              }
+                              className="flex items-center gap-2 rounded-full bg-[#292521] px-5 py-2.5 text-xs font-semibold text-white transition hover:bg-[#b47a57] disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+                              {paymentProcessingId === appointment._id
+                                ? "Redirecting..."
+                                : `Pay Now · $${appointment.servicePrice.toFixed(2)}`}
+                            </button>
+                          )}
+
+                        {(isAdmin ||
+                          appointment.status === "pending") && (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setConfirmAction({
+                                id: appointment._id,
+                                status: "cancelled",
+                              })
+                            }
+                            className="flex items-center gap-2 rounded-full border border-red-200 px-4 py-2.5 text-xs font-semibold text-red-600 transition hover:bg-red-50"
+                          >
+                            <X size={14} />
+                            Cancel appointment
+                          </button>
+                        )}
                       </>
                     )}
                   </div>
