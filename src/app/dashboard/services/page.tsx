@@ -211,12 +211,12 @@ export default function ManageServicesPage() {
         </div>
 
         <Link
-          href="/dashboard/services/add"
-          className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#292521] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#443a32]"
-        >
-          <Plus size={18} />
-          Add New Service
-        </Link>
+  href="/dashboard/services/add"
+  className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#292521] px-5 py-3 text-sm font-semibold !text-white transition hover:bg-[#443a32] hover:!text-white"
+>
+  <Plus size={18} />
+  Add New Service
+</Link>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
