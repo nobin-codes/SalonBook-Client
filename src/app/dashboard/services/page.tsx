@@ -136,7 +136,7 @@ export default function ManageServicesPage() {
   };
 
   const handleDelete = async () => {
-    if (!serviceToDelete) return;
+    if (!serviceToDelete || actionId) return;
 
     const service = serviceToDelete;
 
@@ -149,21 +149,17 @@ export default function ManageServicesPage() {
       });
 
       setServices((current) =>
-        current.map((item) =>
-          item._id === service._id
-            ? { ...item, status: "inactive" }
-            : item,
-        ),
+        current.filter((item) => item._id !== service._id),
       );
 
       setServiceToDelete(null);
 
-      toast.success(
-        `${service.serviceName} removed from active services.`,
-      );
+      toast.success(`${service.serviceName} deleted successfully.`);
     } catch (err) {
       toast.error(
-        err instanceof Error ? err.message : "Failed to remove service.",
+        err instanceof Error
+          ? err.message
+          : "Failed to delete service.",
       );
     } finally {
       setActionId(null);
@@ -429,17 +425,17 @@ export default function ManageServicesPage() {
               id="delete-service-title"
               className="mt-5 text-xl font-bold text-[#292521]"
             >
-              Remove this service?
+              Delete this service?
             </h2>
 
             <p className="mt-2 text-sm leading-6 text-[#817970]">
-              Remove{" "}
+              You are about to permanently delete{" "}
               <strong className="text-[#292521]">
                 {serviceToDelete.serviceName}
-              </strong>{" "}
-              from active services? It will be hidden from customers, but
-              existing appointment history will be preserved. You can
-              reactivate it later.
+              </strong>
+              . Services with existing appointments cannot be deleted because
+              their appointment history must be preserved. Deactivate those
+              services instead.
             </p>
 
             <div className="mt-7 flex justify-end gap-3">
@@ -449,7 +445,7 @@ export default function ManageServicesPage() {
                 onClick={() => setServiceToDelete(null)}
                 className="rounded-xl border border-[#e9e1d8] px-4 py-2.5 text-sm font-semibold text-[#51483f] hover:bg-[#f8f5f0] disabled:opacity-50"
               >
-                Keep Service
+                Cancel
               </button>
 
               <button
@@ -459,8 +455,8 @@ export default function ManageServicesPage() {
                 className="rounded-xl bg-red-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-red-700 disabled:opacity-50"
               >
                 {actionId === serviceToDelete._id
-                  ? "Removing..."
-                  : "Remove Service"}
+                  ? "Deleting..."
+                  : "Delete Permanently"}
               </button>
             </div>
           </div>
