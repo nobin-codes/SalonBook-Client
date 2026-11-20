@@ -156,13 +156,13 @@ export default async function Home() {
                   <article
                     key={service._id}
                     style={{ animationDelay: `${index * 90}ms` }}
-                    className={`salon-reveal group ${
+                    className={`salon-reveal group self-start ${
                       isFeatured ? "lg:col-span-7" : "lg:col-span-5"
                     }`}
                   >
                     <Link
                       href={`/services/${service._id}`}
-                      className="relative block h-full overflow-hidden rounded-[24px] border border-[#e3dbcf] bg-[#fffdf9] transition-all duration-500 hover:-translate-y-1 hover:border-[#c39a73]/70 hover:shadow-[0_24px_55px_rgba(40,35,27,0.10)]"
+                      className="relative block overflow-hidden rounded-[24px] border border-[#e3dbcf] bg-[#fffdf9] transition-all duration-500 hover:-translate-y-1 hover:border-[#c39a73]/70 hover:shadow-[0_24px_55px_rgba(40,35,27,0.10)]"
                     >
                       <div
                         className={`relative overflow-hidden bg-[#ded6c9] ${
