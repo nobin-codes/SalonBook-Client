@@ -55,7 +55,7 @@ export default function LoginPage() {
     try {
       const { error: googleError } = await authClient.signIn.social({
         provider: "google",
-        callbackURL: "/",
+        callbackURL: "https://salonbook-mu.vercel.app/",
       });
 
       if (googleError) {
