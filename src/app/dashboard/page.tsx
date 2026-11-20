@@ -534,12 +534,12 @@ export default function DashboardPage() {
 
             {!isAdmin && (
               <Link
-                href="/services"
-                className="mt-5 inline-flex items-center gap-2 rounded-full bg-[#292521] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#956044]"
-              >
-                Explore services
-                <ArrowUpRight size={16} />
-              </Link>
+  href="/services"
+  className="mt-5 inline-flex items-center gap-2 rounded-full bg-[#292521] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#956044]"
+>
+  Explore services
+  <ArrowUpRight size={16} className="text-white" />
+</Link>
             )}
           </div>
         ) : (
