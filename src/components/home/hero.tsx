@@ -1,12 +1,6 @@
-
 import Link from "next/link";
 import Image from "next/image";
-import {
-  ArrowDown,
-  ArrowRight,
-  Scissors,
-  Sparkles,
-} from "lucide-react";
+import { ArrowDown, ArrowRight, Scissors, Sparkles } from "lucide-react";
 
 export default function Hero() {
   return (
@@ -65,21 +59,21 @@ export default function Hero() {
 
           <p className="salon-hero-reveal salon-hero-delay-2 mt-8 max-w-[470px] text-sm leading-8 text-[#b7b2a8] sm:text-base">
             Great grooming is more than a routine. Discover professional
-            haircuts, beard care, and grooming experiences designed around
-            your personal style.
+            haircuts, beard care, and grooming experiences designed around your
+            personal style.
           </p>
 
           <div className="salon-hero-reveal salon-hero-delay-3 mt-10 flex flex-wrap items-center gap-4">
             <Link
-  href="/services"
- className="mt-5 flex items-center justify-end text-xs font-semibold text-[#a16d4e]"
->
-  Explore services
-  <ArrowRight
-    size={17}
-    className="ml-1 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
-  />
-</Link>
+              href="/services"
+              className="inline-flex min-h-[56px] items-center justify-center gap-3 rounded-full bg-[#c39a73] px-7 text-sm font-semibold text-white transition-colors hover:bg-[#b47a57] hover:text-white focus-visible:text-white active:text-white"
+            >
+              Explore services
+              <ArrowRight
+                size={17}
+                className="text-white transition-transform duration-300"
+              />
+            </Link>
 
             <Link
               href="/register"
