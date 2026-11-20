@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
@@ -158,11 +157,11 @@ export default function DashboardPage() {
   const { data: session, isPending: isSessionPending } = useSession();
 
   const user = session?.user as
-  | {
-      name?: string;
-      role?: string;
-    }
-  | undefined;
+    | {
+        name?: string;
+        role?: string;
+      }
+    | undefined;
 
   const isAdmin = user?.role?.toLowerCase() === "admin";
   const isCustomer = user?.role?.toLowerCase() === "customer";
@@ -174,134 +173,122 @@ export default function DashboardPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const fetchDashboardData = useCallback(
-    async (): Promise<DashboardData> => {
-      if (isAdmin) {
-        const [usersResult, servicesResult, appointmentsResult] =
-          await Promise.allSettled([
-            apiRequest<unknown>("/api/users", {
-              authenticated: true,
-            }),
-            apiRequest<unknown>("/api/services/manage", {
-              authenticated: true,
-            }),
-            apiRequest<unknown>("/api/appointments", {
-              authenticated: true,
-            }),
-          ]);
+  const fetchDashboardData = useCallback(async (): Promise<DashboardData> => {
+    if (isAdmin) {
+      const [usersResult, servicesResult, appointmentsResult] =
+        await Promise.allSettled([
+          apiRequest<unknown>("/api/users", {
+            authenticated: true,
+          }),
+          apiRequest<unknown>("/api/services/manage", {
+            authenticated: true,
+          }),
+          apiRequest<unknown>("/api/appointments", {
+            authenticated: true,
+          }),
+        ]);
 
-        const failedRequests: string[] = [];
+      const failedRequests: string[] = [];
 
-        let users: DashboardUser[] = [];
-        let services: DashboardService[] = [];
-        let appointments: DashboardAppointment[] = [];
+      let users: DashboardUser[] = [];
+      let services: DashboardService[] = [];
+      let appointments: DashboardAppointment[] = [];
 
-        if (usersResult.status === "fulfilled") {
-          users = extractArray<DashboardUser>(usersResult.value, [
-            "users",
-            "customers",
-          ]);
-        } else {
-          failedRequests.push("customers");
-        }
-
-        if (servicesResult.status === "fulfilled") {
-          services = extractArray<DashboardService>(servicesResult.value, [
-            "services",
-          ]);
-        } else {
-          failedRequests.push("services");
-        }
-
-        if (appointmentsResult.status === "fulfilled") {
-          appointments = extractArray<DashboardAppointment>(
-            appointmentsResult.value,
-            ["appointments"],
-          );
-        } else {
-          failedRequests.push("appointments");
-        }
-
-        return {
-          stats: {
-            customers: users.filter(
-              (item) => item.role?.toLowerCase() !== "admin",
-            ).length,
-            activeServices: services.filter(
-              (item) => item.status === "active",
-            ).length,
-            appointments: appointments.length,
-            pending: appointments.filter(
-              (item) => item.status === "pending",
-            ).length,
-            confirmed: appointments.filter(
-              (item) => item.status === "confirmed",
-            ).length,
-            successfulPayments: appointments.filter(
-              (item) => item.paymentStatus === "paid",
-            ).length,
-          },
-          recentAppointments: [...appointments]
-            .sort(
-              (a, b) =>
-                new Date(b.appointmentDate).getTime() -
-                new Date(a.appointmentDate).getTime(),
-            )
-            .slice(0, 5),
-          error:
-            failedRequests.length > 0
-              ? `Some dashboard information could not be loaded: ${failedRequests.join(", ")}.`
-              : "",
-        };
+      if (usersResult.status === "fulfilled") {
+        users = extractArray<DashboardUser>(usersResult.value, [
+          "users",
+          "customers",
+        ]);
+      } else {
+        failedRequests.push("customers");
       }
 
-      if (isCustomer) {
-        const response = await apiRequest<unknown>(
-          "/api/appointments",
-          {
-            authenticated: true,
-          },
-        );
+      if (servicesResult.status === "fulfilled") {
+        services = extractArray<DashboardService>(servicesResult.value, [
+          "services",
+        ]);
+      } else {
+        failedRequests.push("services");
+      }
 
-        const appointments = extractArray<DashboardAppointment>(
-          response,
+      if (appointmentsResult.status === "fulfilled") {
+        appointments = extractArray<DashboardAppointment>(
+          appointmentsResult.value,
           ["appointments"],
         );
-
-        return {
-          stats: {
-            customers: 0,
-            activeServices: 0,
-            appointments: appointments.length,
-            pending: appointments.filter(
-              (item) => item.status === "pending",
-            ).length,
-            confirmed: appointments.filter(
-              (item) => item.status === "confirmed",
-            ).length,
-            successfulPayments: appointments.filter(
-              (item) => item.paymentStatus === "paid",
-            ).length,
-          },
-          recentAppointments: [...appointments]
-            .sort(
-              (a, b) =>
-                new Date(b.appointmentDate).getTime() -
-                new Date(a.appointmentDate).getTime(),
-            )
-            .slice(0, 5),
-          error: "",
-        };
+      } else {
+        failedRequests.push("appointments");
       }
 
       return {
-        stats: initialStats,
-        recentAppointments: [],
+        stats: {
+          customers: users.filter(
+            (item) => item.role?.toLowerCase() !== "admin",
+          ).length,
+          activeServices: services.filter((item) => item.status === "active")
+            .length,
+          appointments: appointments.length,
+          pending: appointments.filter((item) => item.status === "pending")
+            .length,
+          confirmed: appointments.filter((item) => item.status === "confirmed")
+            .length,
+          successfulPayments: appointments.filter(
+            (item) => item.paymentStatus === "paid",
+          ).length,
+        },
+        recentAppointments: [...appointments]
+          .sort(
+            (a, b) =>
+              new Date(b.appointmentDate).getTime() -
+              new Date(a.appointmentDate).getTime(),
+          )
+          .slice(0, 5),
+        error:
+          failedRequests.length > 0
+            ? `Some dashboard information could not be loaded: ${failedRequests.join(", ")}.`
+            : "",
+      };
+    }
+
+    if (isCustomer) {
+      const response = await apiRequest<unknown>("/api/appointments", {
+        authenticated: true,
+      });
+
+      const appointments = extractArray<DashboardAppointment>(response, [
+        "appointments",
+      ]);
+
+      return {
+        stats: {
+          customers: 0,
+          activeServices: 0,
+          appointments: appointments.length,
+          pending: appointments.filter((item) => item.status === "pending")
+            .length,
+          confirmed: appointments.filter((item) => item.status === "confirmed")
+            .length,
+          successfulPayments: appointments.filter(
+            (item) => item.paymentStatus === "paid",
+          ).length,
+        },
+        recentAppointments: [...appointments]
+          .sort(
+            (a, b) =>
+              new Date(b.appointmentDate).getTime() -
+              new Date(a.appointmentDate).getTime(),
+          )
+          .slice(0, 5),
         error: "",
       };
-    },
-    [isAdmin, isCustomer],
-  );
+    }
+
+    return {
+      stats: initialStats,
+      recentAppointments: [],
+      error: "",
+    };
+  }, [isAdmin, isCustomer]);
 
   const loadDashboard = useCallback(async () => {
     setIsLoading(true);
@@ -470,10 +457,7 @@ export default function DashboardPage() {
           disabled={isLoading}
           className="inline-flex h-10 items-center justify-center gap-2 self-start rounded-full border border-[#e9e1d8] bg-white px-4 text-sm font-medium text-[#746c64] transition hover:bg-[#f4ece5] disabled:opacity-50 sm:self-auto"
         >
-          <RefreshCw
-            size={15}
-            className={isLoading ? "animate-spin" : ""}
-          />
+          <RefreshCw size={15} className={isLoading ? "animate-spin" : ""} />
           Refresh
         </button>
       </div>
@@ -534,12 +518,12 @@ export default function DashboardPage() {
 
             {!isAdmin && (
               <Link
-  href="/services"
-  className="mt-5 inline-flex items-center gap-2 rounded-full bg-[#292521] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#956044]"
->
-  Explore services
-  <ArrowUpRight size={16} className="text-white" />
-</Link>
+                href="/services"
+                className="mt-5 flex items-center justify-end text-xs font-semibold text-[#a16d4e]"
+              >
+                Explore services
+                <ArrowUpRight size={16} className="ml-1 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              </Link>
             )}
           </div>
         ) : (
@@ -556,9 +540,9 @@ export default function DashboardPage() {
 
                   <p className="mt-1 text-xs text-[#817970]">
                     {isAdmin
-                      ? appointment.customer?.name ??
+                      ? (appointment.customer?.name ??
                         appointment.customer?.email ??
-                        "Customer"
+                        "Customer")
                       : "Your appointment"}
                     {" · "}
                     {formatDate(appointment.appointmentDate)}
@@ -609,15 +593,13 @@ export default function DashboardPage() {
             className="flex items-center justify-between rounded-2xl bg-[#292521] p-5 text-white transition hover:bg-[#403932]"
           >
             <div>
-  <p className="font-semibold !text-white">
-    Add a new service
-  </p>
-  <p className="mt-1 text-sm !text-white">
-    Expand your salon service menu
-  </p>
-</div>
-<ArrowUpRight size={20} className="text-white" />
-</Link>
+              <p className="font-semibold !text-white">Add a new service</p>
+              <p className="mt-1 text-sm !text-white">
+                Expand your salon service menu
+              </p>
+            </div>
+            <ArrowUpRight size={20} className="text-white" />
+          </Link>
 
           <Link
             href="/dashboard/appointments"

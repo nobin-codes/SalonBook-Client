@@ -72,12 +72,12 @@ export default function Hero() {
           <div className="salon-hero-reveal salon-hero-delay-3 mt-10 flex flex-wrap items-center gap-4">
             <Link
   href="/services"
-  className="group inline-flex min-h-[56px] items-center justify-center gap-4 rounded-full bg-[#c39a73] px-7 text-sm font-semibold text-white transition-all duration-300 hover:-translate-y-1 hover:bg-[#d4b18e] hover:shadow-[0_12px_35px_rgba(195,154,115,0.2)]"
+ className="mt-5 flex items-center justify-end text-xs font-semibold text-[#a16d4e]"
 >
   Explore services
   <ArrowRight
     size={17}
-    className="text-white transition-transform duration-300 group-hover:translate-x-1"
+    className="ml-1 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
   />
 </Link>
 
