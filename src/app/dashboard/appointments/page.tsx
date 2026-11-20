@@ -430,10 +430,14 @@ export default function AppointmentsPage() {
           {!isAdmin && items.length === 0 && (
             <Link
               href="/services"
-              className="mt-5 inline-flex items-center justify-center gap-2 rounded-full bg-[#292521] px-5 py-3 text-xs font-semibold text-white transition-colors hover:bg-[#956044] hover:text-white focus-visible:text-white active:text-white"
+              className="mt-5 inline-flex items-center justify-center gap-2 rounded-full bg-[#292521] px-5 py-3 text-xs font-semibold !text-white transition-colors hover:bg-[#956044] hover:!text-white focus-visible:!text-white active:!text-white"
             >
-              Explore services
-              <ArrowUpRight size={16} className="text-white" />
+              <span className="!text-white">Explore services</span>
+              <ArrowUpRight
+                size={16}
+                className="!text-white"
+                aria-hidden="true"
+              />
             </Link>
           )}
         </div>
