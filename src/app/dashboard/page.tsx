@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
@@ -519,10 +520,14 @@ export default function DashboardPage() {
             {!isAdmin && (
               <Link
                 href="/services"
-                className="mt-5 inline-flex items-center justify-center gap-2 rounded-full bg-[#292521] px-5 py-3 text-xs font-semibold text-white transition-colors hover:bg-[#956044] hover:text-white focus-visible:text-white active:text-white"
+                className="mt-5 inline-flex items-center justify-center gap-2 rounded-full bg-[#292521] px-5 py-3 text-xs font-semibold !text-white transition-colors hover:bg-[#956044] hover:!text-white focus-visible:!text-white active:!text-white"
               >
-                Explore services
-                <ArrowUpRight size={16} className="text-white" />
+                <span className="!text-white">Explore services</span>
+                <ArrowUpRight
+                  size={16}
+                  className="!text-white"
+                  aria-hidden="true"
+                />
               </Link>
             )}
           </div>
@@ -617,15 +622,22 @@ export default function DashboardPage() {
       ) : (
         <Link
           href="/services"
-          className="flex items-center justify-between rounded-2xl bg-[#292521] p-5 text-white transition hover:bg-[#403932]"
+          className="flex items-center justify-between rounded-2xl bg-[#292521] p-5 !text-white transition-colors hover:bg-[#403932] hover:!text-white"
         >
           <div>
-            <p className="font-semibold">Find your next grooming experience</p>
-            <p className="mt-1 text-sm text-white/65">
+            <p className="font-semibold !text-white">
+              Find your next grooming experience
+            </p>
+            <p className="mt-1 text-sm !text-white">
               Explore services and book your next appointment
             </p>
           </div>
-          <ArrowUpRight size={20} />
+
+          <ArrowUpRight
+            size={20}
+            className="shrink-0 !text-white"
+            aria-hidden="true"
+          />
         </Link>
       )}
     </section>
