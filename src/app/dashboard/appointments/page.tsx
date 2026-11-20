@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
@@ -13,6 +12,7 @@ import {
   UserRound,
   Mail,
   Phone,
+  ArrowUpRight,
 } from "lucide-react";
 import { useSession } from "@/lib/auth-client";
 import { apiRequest } from "@/lib/api";
@@ -111,9 +111,7 @@ const formatCreatedDate = (date: string) =>
 export default function AppointmentsPage() {
   const { data: session } = useSession();
 
-  const user = session?.user as
-    | { role?: "admin" | "customer" }
-    | undefined;
+  const user = session?.user as { role?: "admin" | "customer" } | undefined;
 
   const isAdmin = user?.role === "admin";
 
@@ -121,11 +119,11 @@ export default function AppointmentsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [actionMessage, setActionMessage] = useState("");
-  const [statusFilter, setStatusFilter] =
-    useState<StatusFilter>("all");
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [processingId, setProcessingId] = useState<string | null>(null);
-  const [paymentProcessingId, setPaymentProcessingId] =
-    useState<string | null>(null);
+  const [paymentProcessingId, setPaymentProcessingId] = useState<string | null>(
+    null,
+  );
 
   const [confirmAction, setConfirmAction] = useState<{
     id: string;
@@ -139,20 +137,16 @@ export default function AppointmentsPage() {
         { authenticated: true },
       );
 
-      const results: AppointmentItem[] = appointments.map(
-        (appointment) => ({
-          appointment,
-          service: appointment.service ?? null,
-        }),
-      );
+      const results: AppointmentItem[] = appointments.map((appointment) => ({
+        appointment,
+        service: appointment.service ?? null,
+      }));
 
       setItems(results);
       setError("");
     } catch (err) {
       setError(
-        err instanceof Error
-          ? err.message
-          : "Failed to load appointments.",
+        err instanceof Error ? err.message : "Failed to load appointments.",
       );
     } finally {
       setIsLoading(false);
@@ -179,12 +173,10 @@ export default function AppointmentsPage() {
           return;
         }
 
-        const results: AppointmentItem[] = appointments.map(
-          (appointment) => ({
-            appointment,
-            service: appointment.service ?? null,
-          }),
-        );
+        const results: AppointmentItem[] = appointments.map((appointment) => ({
+          appointment,
+          service: appointment.service ?? null,
+        }));
 
         setItems(results);
         setError("");
@@ -194,9 +186,7 @@ export default function AppointmentsPage() {
         }
 
         setError(
-          err instanceof Error
-            ? err.message
-            : "Failed to load appointments.",
+          err instanceof Error ? err.message : "Failed to load appointments.",
         );
       } finally {
         if (isActive) {
@@ -237,17 +227,13 @@ export default function AppointmentsPage() {
       );
 
       setConfirmAction(null);
-      setActionMessage(
-        result.message || `Appointment ${status} successfully.`,
-      );
+      setActionMessage(result.message || `Appointment ${status} successfully.`);
 
       setIsLoading(true);
       await loadAppointments();
     } catch (err) {
       setError(
-        err instanceof Error
-          ? err.message
-          : "Failed to update appointment.",
+        err instanceof Error ? err.message : "Failed to update appointment.",
       );
     } finally {
       setProcessingId(null);
@@ -305,8 +291,7 @@ export default function AppointmentsPage() {
 
   const filteredItems = items.filter(
     (item) =>
-      statusFilter === "all" ||
-      item.appointment.status === statusFilter,
+      statusFilter === "all" || item.appointment.status === statusFilter,
   );
 
   return (
@@ -334,10 +319,7 @@ export default function AppointmentsPage() {
           disabled={isLoading}
           className="inline-flex h-10 items-center justify-center gap-2 self-start rounded-full border border-[#e9e1d8] bg-white px-4 text-sm font-medium text-[#746c64] transition hover:bg-[#f4ece5] disabled:opacity-50 sm:self-auto"
         >
-          <RefreshCw
-            size={15}
-            className={isLoading ? "animate-spin" : ""}
-          />
+          <RefreshCw size={15} className={isLoading ? "animate-spin" : ""} />
           Refresh
         </button>
       </div>
@@ -423,9 +405,7 @@ export default function AppointmentsPage() {
       {isLoading ? (
         <div className="rounded-2xl border border-[#e9e1d8] bg-white py-16 text-center">
           <div className="mx-auto h-8 w-8 animate-spin rounded-full border-2 border-[#e9e1d8] border-t-[#b47a57]" />
-          <p className="mt-4 text-sm text-[#817970]">
-            Loading appointments...
-          </p>
+          <p className="mt-4 text-sm text-[#817970]">Loading appointments...</p>
         </div>
       ) : filteredItems.length === 0 ? (
         <div className="rounded-2xl border border-[#e9e1d8] bg-white px-6 py-16 text-center">
@@ -449,11 +429,12 @@ export default function AppointmentsPage() {
 
           {!isAdmin && items.length === 0 && (
             <Link
-  href="/services"
-  className="mt-5 flex items-center justify-end text-xs font-semibold text-[#a16d4e]"
->
-  Explore services
-</Link>
+              href="/services"
+              className="mt-5 inline-flex items-center justify-center gap-2 rounded-full bg-[#292521] px-5 py-3 text-xs font-semibold text-white transition-colors hover:bg-[#956044] hover:text-white focus-visible:text-white active:text-white"
+            >
+              Explore services
+              <ArrowUpRight size={16} className="text-white" />
+            </Link>
           )}
         </div>
       ) : (
@@ -473,10 +454,7 @@ export default function AppointmentsPage() {
                         className="h-full w-full object-cover"
                       />
                     ) : (
-                      <Scissors
-                        size={26}
-                        className="text-[#b47a57]"
-                      />
+                      <Scissors size={26} className="text-[#b47a57]" />
                     )}
                   </div>
 
@@ -516,18 +494,12 @@ export default function AppointmentsPage() {
 
                     <div className="mt-4 flex flex-wrap gap-x-6 gap-y-3 text-sm text-[#817970]">
                       <span className="flex items-center gap-2">
-                        <CalendarDays
-                          size={16}
-                          className="text-[#b47a57]"
-                        />
+                        <CalendarDays size={16} className="text-[#b47a57]" />
                         {formatDate(appointment.appointmentDate)}
                       </span>
 
                       <span className="flex items-center gap-2">
-                        <Clock3
-                          size={16}
-                          className="text-[#b47a57]"
-                        />
+                        <Clock3 size={16} className="text-[#b47a57]" />
                         {appointment.timeSlot}
                       </span>
                     </div>
@@ -543,9 +515,7 @@ export default function AppointmentsPage() {
                     <p className="text-xl font-semibold text-[#292521]">
                       ${appointment.servicePrice.toFixed(2)}
                     </p>
-                    <p className="mt-1 text-xs text-[#817970]">
-                      Service price
-                    </p>
+                    <p className="mt-1 text-xs text-[#817970]">Service price</p>
                   </div>
                 </div>
 
@@ -563,8 +533,7 @@ export default function AppointmentsPage() {
 
                       <p className="mt-1 flex items-center gap-2 break-all text-xs text-[#817970]">
                         <Mail size={13} className="shrink-0" />
-                        {appointment.customer?.email ??
-                          appointment.customerId}
+                        {appointment.customer?.email ?? appointment.customerId}
                       </p>
 
                       {appointment.customer?.phone && (
@@ -623,31 +592,28 @@ export default function AppointmentsPage() {
                       </>
                     ) : (
                       <>
-                        {isAdmin &&
-                          appointment.status === "pending" && (
-                            <button
-                              type="button"
-                              onClick={() =>
-                                setConfirmAction({
-                                  id: appointment._id,
-                                  status: "confirmed",
-                                })
-                              }
-                              className="flex items-center gap-2 rounded-full bg-emerald-700 px-4 py-2.5 text-xs font-semibold text-white transition hover:bg-emerald-800"
-                            >
-                              <Check size={14} />
-                              Confirm appointment
-                            </button>
-                          )}
+                        {isAdmin && appointment.status === "pending" && (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setConfirmAction({
+                                id: appointment._id,
+                                status: "confirmed",
+                              })
+                            }
+                            className="flex items-center gap-2 rounded-full bg-emerald-700 px-4 py-2.5 text-xs font-semibold text-white transition hover:bg-emerald-800"
+                          >
+                            <Check size={14} />
+                            Confirm appointment
+                          </button>
+                        )}
 
                         {!isAdmin &&
                           appointment.status === "confirmed" &&
                           appointment.paymentStatus === "unpaid" && (
                             <button
                               type="button"
-                              disabled={
-                                paymentProcessingId === appointment._id
-                              }
+                              disabled={paymentProcessingId === appointment._id}
                               onClick={() =>
                                 void handlePayment(appointment._id)
                               }
@@ -659,8 +625,7 @@ export default function AppointmentsPage() {
                             </button>
                           )}
 
-                        {(isAdmin ||
-                          appointment.status === "pending") && (
+                        {(isAdmin || appointment.status === "pending") && (
                           <button
                             type="button"
                             onClick={() =>
