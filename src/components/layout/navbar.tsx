@@ -22,6 +22,7 @@ import { signOut, useSession } from "@/lib/auth-client";
 const navigation = [
   { label: "Home", href: "/" },
   { label: "Services", href: "/services" },
+  { label: "Salon Details", href: "/salon-details" },
 ];
 
 type NavbarUser = {
