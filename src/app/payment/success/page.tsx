@@ -34,14 +34,14 @@ export default function PaymentSuccessPage() {
 
         <Link
           href="/dashboard/appointments"
-          className="mt-8 inline-flex w-full items-center justify-center rounded-xl bg-[#946748] px-6 py-3 font-semibold text-white transition hover:bg-[#795238]"
+          className="mt-8 inline-flex w-full items-center justify-center rounded-xl bg-[#946748] px-6 py-3 font-semibold !text-white transition hover:bg-[#795238] hover:!text-white focus-visible:!text-white active:!text-white"
         >
-          View My Appointments
+          <span className="!text-white">View My Appointments</span>
         </Link>
 
         <Link
           href="/"
-          className="mt-4 inline-block text-sm font-medium text-[#946748] hover:underline"
+          className="mt-4 inline-block text-sm font-medium !text-[#946748] hover:underline hover:!text-[#946748] focus-visible:!text-[#946748] active:!text-[#946748]"
         >
           Back to Home
         </Link>
