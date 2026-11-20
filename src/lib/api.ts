@@ -1,7 +1,7 @@
 
 import { getAccessToken } from "./get-access-token";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_URL = (process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000").replace(/\/+$/, "");
 
 interface ApiOptions extends RequestInit {
   authenticated?: boolean;
@@ -33,7 +33,11 @@ export const apiRequest = async <T>(
     requestHeaders.set("Authorization", `Bearer ${token}`);
   }
 
-  const response = await fetch(`${API_URL}${endpoint}`, {
+  const normalizedEndpoint = endpoint.startsWith("/")
+    ? endpoint
+    : `/${endpoint}`;
+
+  const response = await fetch(`${API_URL}${normalizedEndpoint}`, {
     ...requestOptions,
     headers: requestHeaders,
   });
