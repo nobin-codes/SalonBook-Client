@@ -384,7 +384,7 @@ export default function ServiceDetailsPage() {
                 </p>
                 <Link
                   href="/login"
-                  className="mt-5 flex w-full items-center justify-center rounded-xl bg-[#292521] px-5 py-3 text-sm font-semibold text-white transition hover:bg-[#443a32]"
+                  className="mt-5 flex w-full items-center justify-center rounded-xl bg-[#292521] px-5 py-3 text-sm font-semibold !text-white transition hover:bg-[#443a32] hover:!text-white"
                 >
                   Sign In
                 </Link>
