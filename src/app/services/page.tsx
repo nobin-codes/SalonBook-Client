@@ -24,15 +24,50 @@ interface ServicesResponse {
   data: Service[];
 }
 
-async function getServices(): Promise<Service[]> {
+interface ServicesPageProps {
+  searchParams: Promise<{
+    search?: string;
+    category?: string;
+    sort?: string;
+  }>;
+}
+
+interface ServiceFilters {
+  search: string;
+  category: string;
+  sort: string;
+}
+
+const SERVICE_CATEGORIES = [
+  "Haircut & Styling",
+  "Beard & Shaving",
+  "Hair Coloring",
+  "Hair Treatment",
+  "Facial & Skincare",
+  "Head Massage",
+  "Men's Grooming Packages",
+];
+
+async function getServices(filters: ServiceFilters): Promise<Service[]> {
   try {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
     if (!apiUrl) return [];
 
-    const response = await fetch(`${apiUrl}/api/services`, {
-      cache: "no-store",
-    });
+    const query = new URLSearchParams();
+
+    if (filters.search) query.set("search", filters.search);
+    if (filters.category) query.set("category", filters.category);
+
+    if (filters.sort) query.set("sort", filters.sort);
+
+    const queryString = query.toString();
+    const endpoint = `${apiUrl.replace(/\/+$/, "")}/api/services`;
+
+    const response = await fetch(
+      queryString ? `${endpoint}?${queryString}` : endpoint,
+      { cache: "no-store" },
+    );
 
     if (!response.ok) return [];
 
@@ -53,26 +88,130 @@ function ServicesLoading() {
   );
 }
 
-async function ServicesContent() {
+async function ServicesContent({
+  searchParams,
+}: {
+  searchParams: ServicesPageProps["searchParams"];
+}) {
   await connection();
 
-  const services = await getServices();
+  const params = await searchParams;
+
+  const filters: ServiceFilters = {
+    search: params.search?.trim() ?? "",
+    category: SERVICE_CATEGORIES.includes(params.category ?? "")
+      ? params.category ?? ""
+      : "",
+    sort: ["price-asc", "price-desc"].includes(params.sort ?? "")
+      ? params.sort ?? ""
+      : "",
+  };
+
+  const services = await getServices(filters);
 
   return (
     <>
+      <form
+        action="/services"
+        method="GET"
+        className="mb-10 rounded-2xl border border-[#e9e1d8] bg-white p-5 sm:p-6"
+      >
+        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-[1.5fr_1fr_1fr_auto] lg:items-end">
+          <div>
+            <label
+              htmlFor="service-search"
+              className="mb-2 block text-sm font-medium text-[#292521]"
+            >
+              Search services
+            </label>
+            <input
+              id="service-search"
+              type="search"
+              name="search"
+              defaultValue={filters.search}
+              placeholder="Search by service name..."
+              className="w-full rounded-xl border border-[#e9e1d8] bg-[#fdfcfb] px-4 py-3 text-sm text-[#292521] outline-none transition placeholder:text-[#a49b92] focus:border-[#956044] focus:ring-2 focus:ring-[#956044]/10"
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="service-category"
+              className="mb-2 block text-sm font-medium text-[#292521]"
+            >
+              Category
+            </label>
+            <select
+              id="service-category"
+              name="category"
+              defaultValue={filters.category}
+              className="w-full rounded-xl border border-[#e9e1d8] bg-[#fdfcfb] px-4 py-3 text-sm text-[#292521] outline-none transition focus:border-[#956044] focus:ring-2 focus:ring-[#956044]/10"
+            >
+              <option value="">All categories</option>
+              {SERVICE_CATEGORIES.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label
+              htmlFor="service-sort"
+              className="mb-2 block text-sm font-medium text-[#292521]"
+            >
+              Sort by price
+            </label>
+            <select
+              id="service-sort"
+              name="sort"
+              defaultValue={filters.sort}
+              className="w-full rounded-xl border border-[#e9e1d8] bg-[#fdfcfb] px-4 py-3 text-sm text-[#292521] outline-none transition focus:border-[#956044] focus:ring-2 focus:ring-[#956044]/10"
+            >
+              <option value="">Newest first</option>
+              <option value="price-asc">Price: Low to High</option>
+              <option value="price-desc">Price: High to Low</option>
+            </select>
+          </div>
+
+          <div className="flex gap-3 lg:pb-0">
+            <button
+              type="submit"
+              className="flex-1 rounded-full bg-[#956044] px-6 py-3 text-sm font-medium text-white transition hover:bg-[#75472F]"
+            >
+              Apply
+            </button>
+            <Link
+              href="/services"
+              className="flex items-center justify-center rounded-full border border-[#e9e1d8] px-5 py-3 text-sm font-medium text-[#655c54] transition hover:bg-[#f8f5f0]"
+            >
+              Reset
+            </Link>
+          </div>
+        </div>
+      </form>
+
+      <div className="mb-6 flex items-center justify-between gap-3">
+        <p className="text-sm text-[#817970]">
+          {services.length} {services.length === 1 ? "service" : "services"} found
+        </p>
+      </div>
+
       {services.length === 0 ? (
         <div className="rounded-2xl border border-[#e9e1d8] bg-white px-6 py-16 text-center">
           <h2 className="text-xl font-semibold text-[#292521]">
-            No services available yet
+            No services found
           </h2>
           <p className="mt-3 text-sm text-[#817970]">
-            New grooming services will appear here soon.
+            Try another search term or change your filters to find available
+            grooming services.
           </p>
           <Link
-            href="/"
+            href="/services"
             className="mt-6 inline-flex rounded-full bg-[#292521] px-6 py-3 text-sm font-medium text-white transition hover:bg-[#956044]"
           >
-            Back to home
+            View all services
           </Link>
         </div>
       ) : (
@@ -127,7 +266,7 @@ async function ServicesContent() {
   );
 }
 
-export default function ServicesPage() {
+export default function ServicesPage({ searchParams }: ServicesPageProps) {
   return (
     <main className="min-h-screen bg-[#f8f5f0]">
       <section className="container py-20">
@@ -147,7 +286,7 @@ export default function ServicesPage() {
         </div>
 
         <Suspense fallback={<ServicesLoading />}>
-          <ServicesContent />
+          <ServicesContent searchParams={searchParams} />
         </Suspense>
       </section>
     </main>

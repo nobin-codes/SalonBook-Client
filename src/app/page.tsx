@@ -1,4 +1,3 @@
-
 import type { Metadata } from "next";
 import Link from "next/link";
 import { connection } from "next/server";
@@ -63,9 +62,7 @@ export default async function Home() {
   ]);
 
   const services =
-    featuredServices.length > 0
-      ? featuredServices
-      : allServices.slice(0, 6);
+    featuredServices.length > 0 ? featuredServices : allServices.slice(0, 6);
 
   const categoryCounts = allServices.reduce<Record<string, number>>(
     (counts, service) => {
@@ -129,9 +126,8 @@ export default async function Home() {
 
             <div className="flex max-w-sm flex-col items-start gap-5">
               <p className="text-sm leading-7 text-[#77746c]">
-                The right details make all the difference. Explore
-                professional grooming services and find what works for your
-                style.
+                The right details make all the difference. Explore professional
+                grooming services and find what works for your style.
               </p>
 
               <Link
@@ -298,7 +294,7 @@ export default async function Home() {
               {categories.map(([category, count], index) => (
                 <Link
                   key={category}
-                  href="/services"
+                  href={`/services?category=${encodeURIComponent(category)}`}
                   style={{ animationDelay: `${index * 70}ms` }}
                   className="salon-reveal group relative flex min-h-[150px] flex-col justify-between overflow-hidden rounded-2xl border border-[#d9d0c2] bg-[#f7f3ec]/80 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-[#a8794e] hover:bg-[#fffdf9] hover:shadow-[0_16px_35px_rgba(40,35,27,0.07)]"
                 >
@@ -354,8 +350,8 @@ export default async function Home() {
 
               <p className="mt-7 max-w-md text-sm leading-8 text-[#aaa99f]">
                 Good grooming starts with making time for yourself. Find a
-                service that suits you, choose your appointment, and leave
-                the rest to SalonBook.
+                service that suits you, choose your appointment, and leave the
+                rest to SalonBook.
               </p>
 
               <Link
@@ -387,8 +383,8 @@ export default async function Home() {
                       Services that fit you.
                     </h3>
                     <p className="mt-3 text-sm leading-7 text-[#aaa99f]">
-                      Explore grooming options and choose what suits your
-                      style and preferences.
+                      Explore grooming options and choose what suits your style
+                      and preferences.
                     </p>
                   </div>
                 </div>
@@ -406,8 +402,8 @@ export default async function Home() {
                       A time that works.
                     </h3>
                     <p className="mt-3 text-sm leading-7 text-[#aaa99f]">
-                      Select an available appointment slot and send your
-                      booking request in a few simple steps.
+                      Select an available appointment slot and send your booking
+                      request in a few simple steps.
                     </p>
                   </div>
                 </div>
