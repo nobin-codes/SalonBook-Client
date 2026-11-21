@@ -167,8 +167,8 @@ export default async function Home() {
                       <div
                         className={`relative overflow-hidden bg-[#ded6c9] ${
                           isFeatured
-                            ? "aspect-[4/3] lg:aspect-[1.12/1]"
-                            : "aspect-[4/3]"
+                            ? "aspect-[4/5] sm:aspect-[4/3] lg:aspect-[1.12/1]"
+                            : "aspect-[4/5] sm:aspect-[4/3]"
                         }`}
                       >
                         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -179,19 +179,19 @@ export default async function Home() {
                           className="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.045]"
                         />
 
-                        <div className="absolute inset-0 bg-gradient-to-t from-[#171815]/85 via-[#171815]/10 to-transparent" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#171815]/90 via-[#171815]/10 to-transparent" />
 
-                        <span className="absolute left-5 top-5 rounded-full border border-white/30 bg-[#171815]/45 px-4 py-2 text-[9px] font-semibold uppercase tracking-[1.8px] text-white backdrop-blur-md">
+                        <span className="absolute left-3 top-3 max-w-[calc(100%-3.5rem)] truncate rounded-full border border-white/30 bg-[#171815]/45 px-3 py-1.5 text-[8px] font-semibold uppercase tracking-[1.3px] text-white backdrop-blur-md sm:left-5 sm:top-5 sm:px-4 sm:py-2 sm:text-[9px] sm:tracking-[1.8px]">
                           {service.category}
                         </span>
 
-                        <span className="absolute right-5 top-5 flex h-10 w-10 items-center justify-center rounded-full border border-white/40 bg-white/10 text-white backdrop-blur-md transition-all duration-300 group-hover:rotate-45 group-hover:bg-[#c39a73] group-hover:text-[#171815]">
-                          <ArrowRight size={17} />
+                        <span className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full border border-white/40 bg-white/10 text-white backdrop-blur-md transition-all duration-300 group-hover:rotate-45 group-hover:bg-[#c39a73] group-hover:text-[#171815] sm:right-5 sm:top-5 sm:h-10 sm:w-10">
+                          <ArrowRight size={16} />
                         </span>
 
-                        <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8">
+                        <div className="absolute bottom-0 left-0 right-0 p-4 sm:p-6 lg:p-8">
                           {isFeatured && (
-                            <p className="mb-3 text-[9px] font-bold uppercase tracking-[2.5px] text-[#e0bd98]">
+                            <p className="mb-2 text-[8px] font-bold uppercase tracking-[2px] text-[#e0bd98] sm:mb-3 sm:text-[9px] sm:tracking-[2.5px]">
                               Editor&apos;s pick
                             </p>
                           )}
@@ -199,29 +199,32 @@ export default async function Home() {
                           <h3
                             className={`max-w-lg font-semibold leading-tight text-white ${
                               isFeatured
-                                ? "text-3xl sm:text-4xl lg:text-[42px]"
-                                : "text-2xl"
+                                ? "text-2xl sm:text-4xl lg:text-[42px]"
+                                : "text-xl sm:text-2xl"
                             }`}
                           >
                             {service.serviceName}
                           </h3>
 
-                          <p className="mt-3 max-w-md line-clamp-2 text-sm leading-6 text-white/75">
+                          <p className="mt-2 max-w-md line-clamp-2 text-xs leading-5 text-white/75 sm:mt-3 sm:text-sm sm:leading-6">
                             {service.description}
                           </p>
 
-                          <div className="mt-6 flex items-center justify-between border-t border-white/25 pt-5">
-                            <div>
-                              <p className="text-[9px] font-semibold uppercase tracking-[1.8px] text-white/60">
+                          <div className="mt-4 flex items-center justify-between gap-2 border-t border-white/25 pt-3 sm:mt-6 sm:pt-5">
+                            <div className="min-w-0">
+                              <p className="text-[8px] font-semibold uppercase tracking-[1.3px] text-white/60 sm:text-[9px] sm:tracking-[1.8px]">
                                 Service price
                               </p>
-                              <p className="mt-1 text-xl font-semibold text-white">
+                              <p className="mt-1 text-lg font-semibold text-white sm:text-xl">
                                 ${service.price.toFixed(2)}
                               </p>
                             </div>
 
-                            <span className="flex items-center gap-2 rounded-full bg-white/10 px-4 py-2.5 text-xs font-medium text-white backdrop-blur-sm">
-                              <Clock3 size={14} className="text-[#e0bd98]" />
+                            <span className="flex shrink-0 items-center gap-1.5 rounded-full bg-white/10 px-3 py-2 text-[10px] font-medium text-white backdrop-blur-sm sm:gap-2 sm:px-4 sm:py-2.5 sm:text-xs">
+                              <Clock3
+                                size={13}
+                                className="shrink-0 text-[#e0bd98] sm:h-[14px] sm:w-[14px]"
+                              />
                               {service.duration} min
                             </span>
                           </div>
