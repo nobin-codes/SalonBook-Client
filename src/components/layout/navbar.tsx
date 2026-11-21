@@ -365,11 +365,19 @@ export default function Navbar() {
                   <Link
                     href="/register"
                     onClick={closeMenu}
-                    className="group flex h-12 items-center justify-center gap-3 rounded-full bg-[#292521] text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#956044] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#956044]"
+                    className="group flex h-12 items-center justify-center gap-3 rounded-full bg-[#292521] text-sm font-semibold !text-white shadow-sm transition-colors hover:bg-[#956044] hover:!text-white focus-visible:!text-white active:!text-white"
                   >
-                    <CalendarDays size={16} />
-                    Book an Appointment
-                    <ArrowRight size={15} />
+                    <CalendarDays
+                      size={16}
+                      className="shrink-0 !text-white"
+                    />
+                    <span className="!text-white">
+                      Book an Appointment
+                    </span>
+                    <ArrowRight
+                      size={15}
+                      className="shrink-0 !text-white"
+                    />
                   </Link>
                 </div>
               )}
