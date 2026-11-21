@@ -1,194 +1,148 @@
-# SalonBook Client
+# SalonBook - Salon Appointment Booking Platform
 
-**A modern salon appointment booking platform frontend built with Next.js 16, React 19, and Tailwind CSS 4.**
+## 1. Project Name and Description
 
-## Overview
+**SalonBook** is a salon appointment booking platform where customers can explore salon services, view service details, and request appointments online.
 
-SalonBook is a full-stack salon appointment booking platform where customers can explore grooming services, book appointments, and make payments via Stripe. Administrators can manage services, appointments, users, and view transaction history.
+Customers can register, sign in, manage their appointments, track booking statuses, and pay for confirmed appointments through Stripe.
 
-This repository contains the **frontend/client** application.
+Administrators can manage salon services, appointments, registered customers, and payment transactions through a role-based dashboard.
 
-## Features
+This repository contains the **frontend/client application**, built with Next.js, React, and TypeScript.
 
-### Customer Features
-- **Browse Services**: View active salon services with search, category filtering, and price sorting.
-- **Service Details**: View complete service information including images, descriptions, pricing, and duration.
-- **Appointment Booking**: Book appointments with date/time selection and optional messages.
-- **Dashboard**: View appointment history, status (pending/confirmed/cancelled), and payment status.
-- **Stripe Payments**: Secure payment processing for confirmed appointments via Stripe Checkout.
-- **Profile Management**: Update name, phone number, and profile image.
-- **Authentication**: Email/password registration/login, Google OAuth, and JWT-based API authentication.
+## 2. Important Features
 
-### Admin Features
-- **Admin Dashboard**: Overview statistics for customers, services, appointments, and payments.
-- **Service Management**: Full CRUD for services with image upload (ImgBB), categories, pricing, and active/inactive status.
-- **Appointment Management**: View all appointments, confirm pending appointments, and cancel pending or confirmed appointments.
-- **User Management**: View users and block/unblock customer accounts.
-- **Transaction History**: View payments with customer, service, amount, currency, Stripe session ID, and status.
+### Authentication
+- Customer registration and login.
+- Email and password authentication.
+- Google OAuth sign-in.
+- Profile image support.
+- Role-based customer and admin access.
+- Protected routes and dashboard navigation.
 
-### Technical Features
-- **Role-Based Access Control**: Separate customer/admin dashboards and permissions.
-- **Protected Routes**: Server-side and client-side route protection.
-- **Blocked User Handling**: Blocked users cannot access protected features.
-- **Responsive Design**: Works on desktop, tablet, and mobile.
-- **Toast Notifications**: Success/error feedback using Sonner.
-- **Image Optimization**: Next.js Image optimization with configured remote patterns.
+### Service Browsing
+- Browse available salon services.
+- View featured services on the homepage.
+- Search services by name.
+- Filter services by category.
+- Sort services by price.
+- View detailed service information.
 
-## Technology Stack
+### Appointment Booking
+- Book available salon services.
+- Select appointment dates and time slots.
+- View appointment details and status.
+- Cancel pending appointments.
+- Manage appointments through the customer dashboard.
 
-- **Framework**: Next.js 16 (App Router)
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS 4
-- **Authentication**: Better Auth (React Client)
-- **HTTP Client**: Custom fetch wrapper with JWT token handling
-- **Icons**: Lucide React
-- **Notifications**: Sonner
-- **Image Upload**: ImgBB integration for service images
-- **Payments**: Stripe Checkout
-- **Linting**: ESLint 9 with Next.js config
+### Payment
+- Stripe Checkout integration.
+- Pay for confirmed appointments.
+- Payment success and cancellation pages.
+- View payment status and transaction history.
 
-## Installation
+### Customer Dashboard
+- Overview of account activity.
+- My Appointments.
+- My Profile.
+- Update profile information.
+
+### Admin Dashboard
+- Dashboard overview.
+- Manage salon services.
+- Add and update services.
+- Manage appointment requests.
+- Manage registered customers.
+- Block and unblock customer accounts.
+- View payment transactions.
+- Manage profile information.
+
+### User Experience
+- Responsive design for desktop, tablet, and mobile.
+- Loading and error states.
+- Toast notifications.
+- Reusable components and organized page structure.
+- User-friendly navigation and dashboard layouts.
+
+## 3. Technology Stack
+
+- **Framework:** Next.js 16
+- **Library:** React 19
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS 4
+- **Authentication:** Better Auth
+- **API Integration:** REST API
+- **Icons:** Lucide React
+- **Notifications:** Sonner
+- **Image and Content Presentation:** Next.js Image and Swiper
+- **Backend Integration:** Express.js REST API
+
+## 4. Installation Instructions
+
+Make sure Node.js and npm are installed on your computer.
+
+Clone the client repository:
 
 ```bash
-# Clone the repository
 git clone https://github.com/nobin-codes/SalonBook-Client.git
-cd SalonBook-Client
-
-# Install dependencies
-npm install
-
-# Copy environment template and configure
-cp .env.example .env.local
-# Edit .env.local with your values
 ```
 
-## Environment Variables
+Navigate to the project directory:
 
-Create a `.env.local` file with the following variable. Never commit actual secret values.
+```bash
+cd SalonBook-Client
+```
+
+Install the dependencies:
+
+```bash
+npm install
+```
+
+Create a `.env.local` file in the client root directory and configure the required environment variable listed below.
+
+## 5. How to Run the Project Locally
+
+Start the development server:
+
+```bash
+npm run dev
+```
+
+Open the application in your browser:
+
+`http://localhost:3000`
+
+Build the project:
+
+```bash
+npm run build
+```
+
+Start the production server:
+
+```bash
+npm start
+```
+
+## 6. Required Environment Variables
+
+Create a `.env.local` file in the client root directory.
+
+Configure the following environment variable with your local or deployed backend API URL:
 
 ```env
-# Deployed backend API URL
-NEXT_PUBLIC_API_URL=https://your-api-domain.com
+NEXT_PUBLIC_API_URL
 ```
 
-## Running Locally
+**Security:** Never commit `.env.local` files or sensitive credentials to GitHub.
 
-```bash
-# Development server
-npm run dev
+## 7. Live Website Link
 
-# Production build
-npm run build
+- **Live Website:** https://salonbook-mu.vercel.app/
+- **Backend API:** https://salonbook-server-sooty.vercel.app/
 
-# Start production server
-npm start
+## 8. Client and Server Repository Links
 
-# Lint code
-npm run lint
-```
-
-The application will be available at `http://localhost:3000`.
-
-## Deployment
-
-### Vercel (Recommended)
-
-1. Push the client repository to GitHub.
-2. Import the repository into Vercel.
-3. Configure the environment variable in the Vercel dashboard:
-   - `NEXT_PUBLIC_API_URL` - Your deployed backend API URL.
-4. Deploy the application.
-
-### Other Platforms
-
-The Next.js application can be deployed to any platform supporting Node.js.
-
-- Build: `npm run build`
-- Start: `npm start`
-- Ensure `NEXT_PUBLIC_API_URL` is configured.
-
-## Repository
-
-- **Client**: https://github.com/nobin-codes/SalonBook-Client
-- **Server**: https://github.com/nobin-codes/SalonBook-Server
-
-## Live Demo
-
-- **Frontend**: https://salonbook-mu.vercel.app/
-- **Backend API**: https://salonbook-server-sooty.vercel.app/
-
-## Project Structure
-
-```text
-src/
-|-- app/
-|   |-- dashboard/
-|   |   |-- appointments/
-|   |   |-- profile/
-|   |   |-- services/
-|   |   |   |-- add/
-|   |   |   |-- [id]/
-|   |   |       |-- edit/
-|   |   |-- transactions/
-|   |   |-- users/
-|   |-- services/
-|   |   |-- [id]/
-|   |-- login/
-|   |-- register/
-|   |-- payment/
-|   |-- salon-details/
-|-- components/
-|   |-- layout/
-|   |-- home/
-|   |-- services/
-|-- lib/
-|   |-- api.ts
-|   |-- auth-client.ts
-|   |-- get-access-token.ts
-|   |-- upload-image.ts
-|-- globals.css
-```
-
-## API Integration
-
-The client communicates with the backend REST API through `NEXT_PUBLIC_API_URL`.
-
-### Services
-- `GET /api/services` - Browse active services with search, category filtering, and price sorting (public).
-- `GET /api/services/featured` - Get featured services for the homepage (public).
-- `GET /api/services/:id` - Get service details (public).
-- `GET /api/services/manage` - List services for administration (admin).
-- `GET /api/services/manage/:id` - Get a service for editing (admin).
-- `POST /api/services` - Create a service (admin).
-- `PATCH /api/services/:id` - Update a service (admin).
-- `DELETE /api/services/:id` - Delete or deactivate a service (admin).
-
-### Appointments
-- `POST /api/appointments` - Create an appointment (customer).
-- `GET /api/appointments` - List appointments (authenticated).
-- `GET /api/appointments/:id` - Get appointment details (authorized user/admin).
-- `PATCH /api/appointments/:id/status` - Update appointment status (authorized user/admin).
-
-### Payments
-- `POST /api/payments/create-checkout-session` - Create a Stripe Checkout session (customer).
-- `GET /api/payments/transactions` - List transactions (admin).
-
-### Users
-- `GET /api/users` - List users (admin).
-- `PATCH /api/users/:id/status` - Block or unblock a user (admin).
-
-### Image Upload
-- `POST /api/uploads/image` - Upload a service image to ImgBB (admin only).
-
-## Authentication Flow
-
-1. Users register or log in through Better Auth using email/password or Google.
-2. Better Auth manages the authentication session using secure HTTP-only cookies.
-3. The client retrieves a JWT access token through `authClient.token()`.
-4. Authenticated API requests include an `Authorization: Bearer <token>` header.
-5. The backend verifies the JWT through its JWKS endpoint.
-6. The backend checks the user's role and blocked status for protected requests.
-
-## License
-
-ISC
+- **Client Repository:** https://github.com/nobin-codes/SalonBook-Client
+- **Server Repository:** https://github.com/nobin-codes/SalonBook-Server
