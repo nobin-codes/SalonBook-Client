@@ -10,6 +10,7 @@ import {
   EyeOff,
   Scissors,
   ShieldCheck,
+  ImagePlus,
 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 
@@ -18,6 +19,7 @@ export default function RegisterPage() {
 
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [image, setImage] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -30,7 +32,9 @@ export default function RegisterPage() {
   const hasLowercase = /[a-z]/.test(password);
   const hasMinimumLength = password.length >= 6;
 
-  const handleRegister = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleRegister = async (
+    event: React.FormEvent<HTMLFormElement>,
+  ) => {
     event.preventDefault();
     setError("");
 
@@ -46,6 +50,21 @@ export default function RegisterPage() {
       return;
     }
 
+    const trimmedImage = image.trim();
+
+    if (trimmedImage) {
+      try {
+        const imageUrl = new URL(trimmedImage);
+
+        if (!["http:", "https:"].includes(imageUrl.protocol)) {
+          throw new Error("Invalid image URL");
+        }
+      } catch {
+        setError("Please enter a valid profile image URL.");
+        return;
+      }
+    }
+
     setLoading(true);
 
     try {
@@ -53,6 +72,7 @@ export default function RegisterPage() {
         name: name.trim(),
         email: email.trim(),
         password,
+        image: trimmedImage || undefined,
         callbackURL: "/",
       });
 
@@ -199,6 +219,31 @@ export default function RegisterPage() {
 
               <div>
                 <label
+                  htmlFor="image"
+                  className="mb-2 flex items-center gap-2 text-sm font-medium text-[#292521]"
+                >
+                  <ImagePlus size={16} />
+                  Profile Image URL
+                  <span className="text-xs font-normal text-[#a39a90]">
+                    (Optional)
+                  </span>
+                </label>
+                <input
+                  id="image"
+                  type="url"
+                  autoComplete="url"
+                  value={image}
+                  onChange={(event) => setImage(event.target.value)}
+                  placeholder="https://example.com/profile.jpg"
+                  className="w-full rounded-xl border border-[#e2d9cf] bg-white px-4 py-3 text-sm text-[#292521] outline-none transition placeholder:text-[#b3aaa0] focus:border-[#a16d4e] focus:ring-2 focus:ring-[#a16d4e]/10"
+                />
+                <p className="mt-2 text-xs text-[#a39a90]">
+                  Add a publicly accessible image URL for your profile.
+                </p>
+              </div>
+
+              <div>
+                <label
                   htmlFor="password"
                   className="mb-2 block text-sm font-medium text-[#292521]"
                 >
@@ -229,25 +274,13 @@ export default function RegisterPage() {
                 </div>
 
                 <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs">
-                  <span
-                    className={
-                      hasMinimumLength ? "text-green-700" : "text-[#a39a90]"
-                    }
-                  >
+                  <span className={hasMinimumLength ? "text-green-700" : "text-[#a39a90]"}>
                     {hasMinimumLength ? "✓" : "○"} 6+ characters
                   </span>
-                  <span
-                    className={
-                      hasUppercase ? "text-green-700" : "text-[#a39a90]"
-                    }
-                  >
+                  <span className={hasUppercase ? "text-green-700" : "text-[#a39a90]"}>
                     {hasUppercase ? "✓" : "○"} Uppercase
                   </span>
-                  <span
-                    className={
-                      hasLowercase ? "text-green-700" : "text-[#a39a90]"
-                    }
-                  >
+                  <span className={hasLowercase ? "text-green-700" : "text-[#a39a90]"}>
                     {hasLowercase ? "✓" : "○"} Lowercase
                   </span>
                 </div>
@@ -350,6 +383,7 @@ export default function RegisterPage() {
             </h2>
             <p className="mt-6 max-w-md text-base leading-7 text-white/65">
               Discover professional men&apos;s grooming services and book your next
+              appointment with confidence.
             </p>
           </div>
 
