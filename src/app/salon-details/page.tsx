@@ -9,7 +9,6 @@ import {
   Mail,
   ArrowLeft,
   Scissors,
-  Link2,
   ArrowUpRight,
   Sparkles,
 } from "lucide-react";
@@ -33,9 +32,6 @@ export default function SalonDetailsPage() {
       </main>
     );
   }
-
-  const email = "hello@salonbook.com";
-  const instagramUrl = "https://www.instagram.com/";
 
   return (
     <main className="relative min-h-screen overflow-hidden bg-[#f8f5f0]">
@@ -142,43 +138,33 @@ export default function SalonDetailsPage() {
 
           {/* Information cards */}
           <div className="grid gap-6 md:grid-cols-2">
-            {/* Contact */}
+            {/* Booking */}
             <section className="salon-fade-up salon-delay-1 group rounded-3xl border border-[#e9e1d8] bg-white p-7 shadow-sm transition-all duration-500 hover:-translate-y-1 hover:border-[#c9a48b] hover:shadow-xl hover:shadow-[#292521]/[0.06] sm:p-9">
               <div className="mb-7 flex size-12 items-center justify-center rounded-2xl bg-[#f8f5f0] text-[#b47a57] transition-all duration-300 group-hover:bg-[#292521] group-hover:text-white">
                 <Mail size={21} />
               </div>
 
               <p className="mb-2 text-xs font-semibold uppercase tracking-[0.18em] text-[#b47a57]">
-                Get in touch
+                Your next step
               </p>
 
-              <h2 className="mb-7 text-2xl font-bold text-[#292521]">
-                Contact Us
+              <h2 className="mb-5 text-2xl font-bold text-[#292521]">
+                Book Your Experience
               </h2>
 
-              <div className="flex items-center gap-4 rounded-2xl border border-[#eee8e1] bg-[#faf8f5] p-4 transition-colors duration-300 hover:border-[#c9a48b]">
-                <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-white text-[#b47a57] shadow-sm">
-                  <Mail size={18} />
-                </div>
-
-                <div className="min-w-0">
-                  <p className="mb-1 text-xs font-medium text-[#a49a90]">
-                    Email address
-                  </p>
-
-                  <a
-                    href={`mailto:${email}`}
-                    className="break-all text-sm font-semibold text-[#292521] transition-colors hover:text-[#b47a57]"
-                  >
-                    {email}
-                  </a>
-                </div>
-              </div>
-
-              <p className="mt-6 text-sm leading-7 text-[#817970]">
-                Have a question or need assistance? We&apos;d love to hear from
-                you. Get in touch with our team.
+              <p className="text-sm leading-7 text-[#817970]">
+                Explore our grooming services, choose the experience that
+                suits you, and manage your appointments through your
+                SalonBook account.
               </p>
+
+              <Link
+                href="/services"
+                className="mt-7 inline-flex items-center gap-2 rounded-full bg-[#292521] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#956044]"
+              >
+                Explore Services
+                <ArrowUpRight size={16} />
+              </Link>
             </section>
 
             {/* About */}
@@ -204,36 +190,16 @@ export default function SalonDetailsPage() {
                 </p>
 
                 <p>
-                  From classic haircuts and hot towel shaves to beard sculpting
-                  and facial treatments, every service is tailored to your
-                  unique preferences. We use premium products and take the
-                  time to understand your needs.
+                  From classic haircuts and hot towel shaves to beard
+                  sculpting and facial treatments, every service is tailored
+                  to your unique preferences. We use premium products and
+                  take the time to understand your needs.
                 </p>
 
                 <p>
                   Walk in or book online — your next great look is just an
                   appointment away.
                 </p>
-              </div>
-
-              {/* Social links */}
-              <div className="mt-8 border-t border-[#eee8e1] pt-6">
-                <h3 className="mb-4 text-sm font-bold text-[#292521]">
-                  Follow Our Journey
-                </h3>
-
-                <a
-                  href={instagramUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Visit SalonBook on Instagram"
-                  className="group/social inline-flex size-11 items-center justify-center rounded-xl border border-[#e9e1d8] text-[#817970] transition-all duration-300 hover:-translate-y-1 hover:border-[#b47a57] hover:bg-[#b47a57] hover:text-white hover:shadow-lg hover:shadow-[#b47a57]/20"
-                >
-                  <Link2
-                    size={19}
-                    className="transition-transform duration-300 group-hover/social:scale-110"
-                  />
-                </a>
               </div>
             </section>
           </div>
