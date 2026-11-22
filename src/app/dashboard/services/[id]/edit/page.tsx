@@ -11,9 +11,9 @@ import {
   Upload,
   X,
   AlertCircle,
-  CheckCircle2,
   RefreshCw,
 } from "lucide-react";
+import { toast } from "sonner";
 import { apiRequest } from "@/lib/api";
 import { uploadImage } from "@/lib/upload-image";
 
@@ -69,7 +69,7 @@ export default function EditServicePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [progressMessage, setProgressMessage] = useState("");
 
   const previewUrlRef = useRef<string | null>(null);
 
@@ -146,7 +146,7 @@ export default function EditServicePage() {
     if (!file) return;
 
     setError("");
-    setSuccess("");
+    setProgressMessage("");
 
     const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
 
@@ -197,7 +197,7 @@ export default function EditServicePage() {
     event.preventDefault();
 
     setError("");
-    setSuccess("");
+    setProgressMessage("");
 
     if (!service) return;
 
@@ -235,13 +235,13 @@ export default function EditServicePage() {
       let imageUrl = service.image;
 
       if (imageFile) {
-        setSuccess("Uploading new service image...");
+        setProgressMessage("Uploading new service image...");
 
         const uploadedImage = await uploadImage(imageFile);
         imageUrl = uploadedImage.url;
       }
 
-      setSuccess("Saving service changes...");
+      setProgressMessage("Saving service changes...");
 
       await apiRequest<Service>(`/api/services/${serviceId}`, {
         method: "PATCH",
@@ -257,19 +257,19 @@ export default function EditServicePage() {
         }),
       });
 
-      setSuccess("Service updated successfully!");
+      toast.success("Service updated successfully!");
 
       router.push("/dashboard/services");
       router.refresh();
     } catch (err) {
-      setError(
+      toast.error(
         err instanceof Error
           ? err.message
           : "Failed to update service. Please try again.",
       );
-      setSuccess("");
     } finally {
       setSaving(false);
+      setProgressMessage("");
     }
   };
 
@@ -538,20 +538,20 @@ export default function EditServicePage() {
           </p>
         </div>
 
-        {(error || success) && (
-          <div
-            className={`flex items-start gap-3 rounded-xl border p-4 text-sm ${
-              error
-                ? "border-red-200 bg-red-50 text-red-700"
-                : "border-emerald-200 bg-emerald-50 text-emerald-800"
-            }`}
-          >
-            {error ? (
-              <AlertCircle size={18} className="mt-0.5 shrink-0" />
-            ) : (
-              <CheckCircle2 size={18} className="mt-0.5 shrink-0" />
-            )}
-            <p>{error || success}</p>
+        {error && (
+          <div className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+            <AlertCircle size={18} className="mt-0.5 shrink-0" />
+            <p>{error}</p>
+          </div>
+        )}
+
+        {progressMessage && (
+          <div className="flex items-center gap-3 rounded-xl border border-[#e9e1d8] bg-[#fcfaf7] p-4 text-sm text-[#51483f]">
+            <LoaderCircle
+              size={18}
+              className="shrink-0 animate-spin text-[#b47a57]"
+            />
+            <p>{progressMessage}</p>
           </div>
         )}
 
