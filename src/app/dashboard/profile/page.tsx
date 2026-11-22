@@ -2,7 +2,8 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { Camera, CheckCircle2, Loader2, UserRound } from "lucide-react";
+import { Camera, Loader2, UserRound } from "lucide-react";
+import { toast } from "sonner";
 import { authClient, useSession } from "@/lib/auth-client";
 
 export default function ProfilePage() {
@@ -56,13 +57,11 @@ function ProfileForm({ user, refetchSession }: ProfileFormProps) {
   const [phone, setPhone] = useState(user.phone ?? "");
   const [image, setImage] = useState(user.image ?? "");
   const [isSaving, setIsSaving] = useState(false);
-  const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    setSuccess("");
     setError("");
 
     if (!name.trim()) {
@@ -95,9 +94,10 @@ function ProfileForm({ user, refetchSession }: ProfileFormProps) {
       }
 
       await refetchSession();
-      setSuccess("Your profile has been updated successfully.");
+
+      toast.success("Your profile has been updated successfully.");
     } catch (err) {
-      setError(
+      toast.error(
         err instanceof Error
           ? err.message
           : "Something went wrong. Please try again.",
@@ -234,13 +234,6 @@ function ProfileForm({ user, refetchSession }: ProfileFormProps) {
           {error && (
             <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
               {error}
-            </div>
-          )}
-
-          {success && (
-            <div className="flex items-center gap-2 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
-              <CheckCircle2 size={17} />
-              {success}
             </div>
           )}
 
