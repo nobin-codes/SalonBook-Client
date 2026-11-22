@@ -12,6 +12,7 @@ import {
   CreditCard,
   ArrowUpRight,
   RefreshCw,
+  XCircle,
   AlertCircle,
 } from "lucide-react";
 import { useSession } from "@/lib/auth-client";
@@ -54,6 +55,7 @@ interface DashboardStats {
   appointments: number;
   pending: number;
   confirmed: number;
+  cancelled: number;
   successfulPayments: number;
 }
 
@@ -151,6 +153,7 @@ const initialStats: DashboardStats = {
   appointments: 0,
   pending: 0,
   confirmed: 0,
+  cancelled: 0,
   successfulPayments: 0,
 };
 
@@ -233,6 +236,8 @@ export default function DashboardPage() {
             .length,
           confirmed: appointments.filter((item) => item.status === "confirmed")
             .length,
+          cancelled: appointments.filter((item) => item.status === "cancelled")
+            .length,
           successfulPayments: appointments.filter(
             (item) => item.paymentStatus === "paid",
           ).length,
@@ -268,6 +273,8 @@ export default function DashboardPage() {
           pending: appointments.filter((item) => item.status === "pending")
             .length,
           confirmed: appointments.filter((item) => item.status === "confirmed")
+            .length,
+          cancelled: appointments.filter((item) => item.status === "cancelled")
             .length,
           successfulPayments: appointments.filter(
             (item) => item.paymentStatus === "paid",
@@ -419,6 +426,14 @@ export default function DashboardPage() {
       description: "Your approved appointments",
       icon: CheckCircle2,
       color: "bg-emerald-50 text-emerald-700",
+      href: "/dashboard/appointments",
+    },
+    {
+      title: "Cancelled bookings",
+      value: stats.cancelled,
+      description: "Your cancelled appointments",
+      icon: XCircle,
+      color: "bg-red-50 text-red-700",
       href: "/dashboard/appointments",
     },
     {
