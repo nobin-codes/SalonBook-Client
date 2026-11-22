@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
@@ -14,6 +15,7 @@ import {
   Phone,
   ArrowUpRight,
 } from "lucide-react";
+import { toast } from "sonner";
 import { useSession } from "@/lib/auth-client";
 import { apiRequest } from "@/lib/api";
 
@@ -118,7 +120,6 @@ export default function AppointmentsPage() {
   const [items, setItems] = useState<AppointmentItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
-  const [actionMessage, setActionMessage] = useState("");
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [processingId, setProcessingId] = useState<string | null>(null);
   const [paymentProcessingId, setPaymentProcessingId] = useState<string | null>(
@@ -214,7 +215,6 @@ export default function AppointmentsPage() {
   ) => {
     setProcessingId(appointmentId);
     setError("");
-    setActionMessage("");
 
     try {
       const result = await apiRequest<{ message: string }>(
@@ -227,12 +227,15 @@ export default function AppointmentsPage() {
       );
 
       setConfirmAction(null);
-      setActionMessage(result.message || `Appointment ${status} successfully.`);
+
+      toast.success(
+        result.message || `Appointment ${status} successfully.`,
+      );
 
       setIsLoading(true);
       await loadAppointments();
     } catch (err) {
-      setError(
+      toast.error(
         err instanceof Error ? err.message : "Failed to update appointment.",
       );
     } finally {
@@ -243,7 +246,6 @@ export default function AppointmentsPage() {
   const handlePayment = async (appointmentId: string) => {
     setPaymentProcessingId(appointmentId);
     setError("");
-    setActionMessage("");
 
     try {
       const result = await apiRequest<{ checkoutUrl: string }>(
@@ -261,7 +263,7 @@ export default function AppointmentsPage() {
 
       window.location.assign(result.checkoutUrl);
     } catch (err) {
-      setError(
+      toast.error(
         err instanceof Error
           ? err.message
           : "Unable to start payment. Please try again.",
@@ -359,12 +361,6 @@ export default function AppointmentsPage() {
           </p>
         </div>
       </div>
-
-      {actionMessage && (
-        <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
-          {actionMessage}
-        </div>
-      )}
 
       {error && (
         <div className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
