@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
@@ -75,9 +74,7 @@ const getDhakaMinutes = () => {
     hourCycle: "h23",
   }).formatToParts(new Date());
 
-  const hour = Number(
-    parts.find((part) => part.type === "hour")?.value ?? 0,
-  );
+  const hour = Number(parts.find((part) => part.type === "hour")?.value ?? 0);
   const minute = Number(
     parts.find((part) => part.type === "minute")?.value ?? 0,
   );
@@ -125,9 +122,7 @@ export default function ServiceDetailsPage() {
 
   const fetchService = useCallback(async (): Promise<ServiceResult> => {
     try {
-      const data = await apiRequest<Service>(
-        `/api/services/${serviceId}`,
-      );
+      const data = await apiRequest<Service>(`/api/services/${serviceId}`);
 
       return {
         data,
@@ -137,14 +132,19 @@ export default function ServiceDetailsPage() {
       return {
         data: null,
         error:
-          err instanceof Error
-            ? err.message
-            : "Unable to load this service.",
+          err instanceof Error ? err.message : "Unable to load this service.",
       };
     }
   }, [serviceId]);
 
   useEffect(() => {
+    if (sessionLoading) return;
+
+    if (!user) {
+      router.replace("/login");
+      return;
+    }
+
     let isActive = true;
 
     const loadService = async () => {
@@ -162,7 +162,7 @@ export default function ServiceDetailsPage() {
     return () => {
       isActive = false;
     };
-  }, [fetchService]);
+  }, [fetchService, sessionLoading, user, router]);
 
   const availableTimeSlots = timeSlots.filter((slot) => {
     if (appointmentDate !== today) return true;
@@ -170,9 +170,7 @@ export default function ServiceDetailsPage() {
     return getSlotStartMinutes(slot) > getDhakaMinutes();
   });
 
-  const handleBooking = async (
-    event: React.FormEvent<HTMLFormElement>,
-  ) => {
+  const handleBooking = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     setBookingError("");
@@ -255,7 +253,7 @@ export default function ServiceDetailsPage() {
   const inputClass =
     "mt-2 w-full rounded-xl border border-[#e9e1d8] bg-[#fcfaf7] px-4 py-3 text-sm text-[#292521] outline-none transition focus:border-[#b47a57] focus:ring-2 focus:ring-[#b47a57]/10";
 
-  if (loading) {
+  if (sessionLoading || !user || loading) {
     return (
       <main className="container flex min-h-[65vh] items-center justify-center">
         <div className="text-center">
@@ -363,8 +361,8 @@ export default function ServiceDetailsPage() {
               </h2>
 
               <p className="mt-2 text-sm leading-6 text-[#817970]">
-                Choose a date and time that works for you. Your appointment
-                will be submitted for confirmation.
+                Choose a date and time that works for you. Your appointment will
+                be submitted for confirmation.
               </p>
             </div>
 
@@ -402,8 +400,8 @@ export default function ServiceDetailsPage() {
                   Admin account
                 </h3>
                 <p className="mt-2 text-sm leading-6 text-[#817970]">
-                  Admin accounts manage services and appointments. Please
-                  sign in with a customer account to make a booking.
+                  Admin accounts manage services and appointments. Please sign
+                  in with a customer account to make a booking.
                 </p>
               </div>
             ) : user.isBlocked ? (
@@ -503,9 +501,7 @@ export default function ServiceDetailsPage() {
                     </span>
                   </div>
                   <div className="mt-3 flex items-center justify-between border-t border-[#e9e1d8] pt-3">
-                    <span className="text-sm text-[#817970]">
-                      Total price
-                    </span>
+                    <span className="text-sm text-[#817970]">Total price</span>
                     <span className="text-xl font-bold text-[#292521]">
                       ${service.price.toFixed(2)}
                     </span>
@@ -545,8 +541,8 @@ export default function ServiceDetailsPage() {
                 </button>
 
                 <p className="text-center text-xs leading-5 text-[#a69c91]">
-                  Your appointment will remain pending until an admin
-                  confirms it. Payment is not collected at this stage.
+                  Your appointment will remain pending until an admin confirms
+                  it. Payment is not collected at this stage.
                 </p>
               </form>
             )}
