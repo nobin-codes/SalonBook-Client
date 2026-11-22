@@ -34,7 +34,7 @@ export default function SalonDetailsPage() {
   }
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#f8f5f0]">
+    <main className="relative min-h-screen overflow-x-clip bg-[#f8f5f0]">
       <style>{`
         @keyframes salonFadeUp {
           from {
@@ -48,8 +48,12 @@ export default function SalonDetailsPage() {
         }
 
         @keyframes salonFadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
         }
 
         .salon-fade-up {
@@ -60,9 +64,17 @@ export default function SalonDetailsPage() {
           animation: salonFadeIn 1s ease-out both;
         }
 
-        .salon-delay-1 { animation-delay: 0.12s; }
-        .salon-delay-2 { animation-delay: 0.24s; }
-        .salon-delay-3 { animation-delay: 0.36s; }
+        .salon-delay-1 {
+          animation-delay: 0.12s;
+        }
+
+        .salon-delay-2 {
+          animation-delay: 0.24s;
+        }
+
+        .salon-delay-3 {
+          animation-delay: 0.36s;
+        }
 
         @media (prefers-reduced-motion: reduce) {
           .salon-fade-up,
@@ -160,10 +172,10 @@ export default function SalonDetailsPage() {
 
               <Link
                 href="/services"
-                className="mt-7 inline-flex items-center gap-2 rounded-full bg-[#292521] px-6 py-3 text-sm font-semibold text-white transition hover:bg-[#956044]"
+                className="mt-7 inline-flex items-center gap-2 rounded-full bg-[#292521] px-6 py-3 text-sm font-semibold !text-white transition hover:bg-[#956044]"
               >
-                Explore Services
-                <ArrowUpRight size={16} />
+                <span className="text-white">Explore Services</span>
+                <ArrowUpRight size={16} className="text-white" />
               </Link>
             </section>
 
@@ -183,8 +195,8 @@ export default function SalonDetailsPage() {
 
               <div className="space-y-4 text-sm leading-7 text-[#817970]">
                 <p>
-                  At SalonBook, we believe grooming is more than a routine —
-                  it&apos;s a ritual. Our experienced barbers combine
+                  At SalonBook, we believe grooming is more than a routine
+                  — it&apos;s a ritual. Our experienced barbers combine
                   traditional techniques with modern styles to deliver a
                   personalized experience for every client.
                 </p>
@@ -221,13 +233,15 @@ export default function SalonDetailsPage() {
 
             <Link
               href="/services"
-              className="mt-7 inline-flex items-center justify-center gap-2 rounded-full bg-[#c39a73] px-7 py-3.5 text-sm font-bold !text-white shadow-lg shadow-black/10 transition-all duration-300 hover:-translate-y-1 hover:bg-[#b47a57] hover:!text-white hover:shadow-xl focus-visible:!text-white active:!text-white"
+              className="mt-7 inline-flex items-center justify-center gap-2 rounded-full bg-[#c39a73] px-7 py-3.5 text-sm font-bold !text-white shadow-lg shadow-black/10 transition-all duration-300 hover:-translate-y-1 hover:bg-[#b47a57]"
             >
-              <span className="!text-white">Explore Our Services</span>
+              <span className="text-white">
+                Explore Our Services
+              </span>
 
               <ArrowUpRight
                 size={17}
-                className="!text-white transition-transform duration-300"
+                className="text-white transition-transform duration-300"
                 aria-hidden="true"
               />
             </Link>
