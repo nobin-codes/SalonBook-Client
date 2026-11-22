@@ -1,6 +1,9 @@
 
 "use client";
 
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useSession } from "@/lib/auth-client";
 import Link from "next/link";
 import {
   Mail,
@@ -12,6 +15,25 @@ import {
 } from "lucide-react";
 
 export default function SalonDetailsPage() {
+  const router = useRouter();
+  const { data: session, isPending } = useSession();
+
+  const isAuthenticated = Boolean(session?.user);
+
+  useEffect(() => {
+    if (!isPending && !isAuthenticated) {
+      router.replace("/login");
+    }
+  }, [isPending, isAuthenticated, router]);
+
+  if (isPending || !isAuthenticated) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-[#f8f5f0]">
+        <div className="size-8 animate-spin rounded-full border-4 border-[#e9e1d8] border-t-[#b47a57]" />
+      </main>
+    );
+  }
+
   const email = "hello@salonbook.com";
   const instagramUrl = "https://www.instagram.com/";
 
