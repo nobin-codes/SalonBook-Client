@@ -73,7 +73,7 @@ export default function RegisterPage() {
         email: email.trim(),
         password,
         image: trimmedImage || undefined,
-        callbackURL: "/",
+        callbackURL: "/dashboard",
       });
 
       if (registerError) {
@@ -83,7 +83,7 @@ export default function RegisterPage() {
         return;
       }
 
-      router.push("/");
+      router.push("/dashboard");
       router.refresh();
     } catch {
       setError("Something went wrong. Please try again.");
@@ -99,7 +99,7 @@ export default function RegisterPage() {
     try {
       const { error: googleError } = await authClient.signIn.social({
         provider: "google",
-        callbackURL: "https://salonbook-mu.vercel.app/",
+        callbackURL: "https://salonbook-mu.vercel.app/dashboard",
       });
 
       if (googleError) {
