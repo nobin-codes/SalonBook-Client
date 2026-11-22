@@ -10,9 +10,9 @@ import {
   LoaderCircle,
   Upload,
   X,
-  CheckCircle2,
   AlertCircle,
 } from "lucide-react";
+import { toast } from "sonner";
 import { apiRequest } from "@/lib/api";
 import { uploadImage } from "@/lib/upload-image";
 
@@ -50,7 +50,7 @@ export default function AddServicePage() {
   const [imagePreview, setImagePreview] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+  const [progressMessage, setProgressMessage] = useState("");
 
   useEffect(() => {
     return () => {
@@ -81,7 +81,7 @@ export default function AddServicePage() {
     if (!file) return;
 
     setError("");
-    setSuccess("");
+    setProgressMessage("");
 
     const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
 
@@ -132,7 +132,7 @@ export default function AddServicePage() {
     event.preventDefault();
 
     setError("");
-    setSuccess("");
+    setProgressMessage("");
 
     if (form.serviceName.trim().length < 2) {
       setError("Service name must contain at least 2 characters.");
@@ -169,11 +169,11 @@ export default function AddServicePage() {
 
     try {
       setLoading(true);
-      setSuccess("Uploading service image...");
+      setProgressMessage("Uploading service image...");
 
       const uploadedImage = await uploadImage(imageFile);
 
-      setSuccess("Image uploaded. Saving service...");
+      setProgressMessage("Image uploaded. Saving service...");
 
       await apiRequest("/api/services", {
         method: "POST",
@@ -188,19 +188,19 @@ export default function AddServicePage() {
         }),
       });
 
-      setSuccess("Service created successfully!");
+      toast.success("Service created successfully!");
 
       router.push("/dashboard/services");
       router.refresh();
     } catch (err) {
-      setError(
+      toast.error(
         err instanceof Error
           ? err.message
           : "Something went wrong while creating the service.",
       );
-      setSuccess("");
     } finally {
       setLoading(false);
+      setProgressMessage("");
     }
   };
 
@@ -429,21 +429,17 @@ export default function AddServicePage() {
           />
         </div>
 
-        {(error || success) && (
-          <div
-            className={`flex items-start gap-3 rounded-xl border p-4 text-sm ${
-              error
-                ? "border-red-200 bg-red-50 text-red-700"
-                : "border-emerald-200 bg-emerald-50 text-emerald-800"
-            }`}
-          >
-            {error ? (
-              <AlertCircle size={18} className="mt-0.5 shrink-0" />
-            ) : (
-              <CheckCircle2 size={18} className="mt-0.5 shrink-0" />
-            )}
+        {error && (
+          <div className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+            <AlertCircle size={18} className="mt-0.5 shrink-0" />
+            <p>{error}</p>
+          </div>
+        )}
 
-            <p>{error || success}</p>
+        {progressMessage && (
+          <div className="flex items-center gap-3 rounded-xl border border-[#e9e1d8] bg-[#fcfaf7] p-4 text-sm text-[#51483f]">
+            <LoaderCircle size={18} className="shrink-0 animate-spin text-[#b47a57]" />
+            <p>{progressMessage}</p>
           </div>
         )}
 
